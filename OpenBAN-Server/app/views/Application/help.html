@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to OpenBAN</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- <link rel="stylesheet" type="text/css" media="screen" href="@{'public/stylesheets/themes/smoothness/jquery-ui.css'}" /> -->
+<!-- <link rel="stylesheet" type="text/css" href="@{'/public/stylesheets/jquery.noty.css'}"> -->
+<!-- <link rel="stylesheet" type="text/css" href="@{'/public/stylesheets/noty_theme_twitter.css'}"> -->
+
+<!-- Bootstrap -->
+<link rel="stylesheet" type="text/css" media="screen"
+	href="@{'/public/stylesheets/bootstrap.css'}">
+
+<link rel="stylesheet" type="text/css" media="screen"
+	href="@{'/public/stylesheets/bootstrap-responsive.css'}">
+	
+<link rel="stylesheet" type="text/css" media="screen"
+	href="@{'/public/stylesheets/jumbotron-narrow.css'}">
+
+<link rel="stylesheet" type="text/css" media="screen"
+	href="@{'/public/stylesheets/font-awesome.min.css'}">
+	
+<link href="@{'/public/stylesheets/main.css'}" rel="stylesheet" type="text/css">
+ 
+ 
+<link href='https://public.opencpu.org/css/pages.css'}" rel="stylesheet" type="text/css">	
+
+
+<script type="text/javascript" src="@{'public/javascripts/jquery-2.0.2.js'}"></script>
+<script type="text/javascript" src="@{'public/javascripts/jquery-ui-1.10.3.custom.min.js'}"></script>
+
+<script type="text/javascript" src="@{'public/javascripts/bootstrap.js'}"></script>
+<script type="text/javascript" src="@{'public/javascripts/jquery.scrollTo.min.js'}"></script>
+
+<script type="text/javascript">
+
+var FlashAlert = (function() {
+	    "use strict";
+
+	    var elem,
+	        hideHandler,
+	        that = {};
+
+	    that.init = function(options) {
+	        elem = $(options.selector);
+	    };
+
+	    that.show = function(text) {
+	        clearTimeout(hideHandler);
+
+	        elem.find("span").html(text);
+	        elem.delay(200).fadeIn().delay(4000).fadeOut();
+	    };
+
+	    return that;
+	}());
+
+
+$(document).ready(function() {
+
+	FlashAlert.init( {"selector": ".bb-flash-alert"} );
+
+	var flashmsg=  '${flashmsg}';
+	//alert(flashmsg);
+	if(flashmsg.length > 0 ){
+		FlashAlert.show(flashmsg);	
+	}
+
+    $("#trynow").click(function(event){
+    	if($(this).val().length == 0 ) return;
+    	alert("trying now...");
+   });
+
+    $(function(){
+      $('body').scrollspy({ target: '#docmenu', offset:80 })
+    });
+
+    $("#docmenu li a").on('click', function(e) {
+      e.preventDefault();
+      $.scrollTo(this.hash, 500, {offset: -65});
+      $(this).blur();
+    });  
+
+    
+    /*
+    message = "${message}";
+    
+    if(message.length == 0) {
+    	$(".msg-status").css( {display: "none"});    	
+    }
+    
+    if(message.length > 0) {
+        setTimeout(function(){          
+      	  $(".msg-status").fadeOut("slow", function () {
+      	  $(".msg-status").remove();
+      	      }); }, 5000);    	
+    }*/
+    
+});
+</script>
+
+</head>
+
+<body>
+
+	<div class="bb-flash-alert alert alert-success" style="display:none;">
+        <span></span>
+    </div>
+
+	<div class="container">
+
+		<div class="header">
+			<ul class="nav nav-pills pull-right">
+				<li ><a href="/">Home</a></li>
+				<li class="active"><a href="#">Help</a></li>
+			</ul>
+						
+			<h2 class="text-primary">OpenBAN</h2>
+		</div>
+
+<div class="row">
+	<div class="col-md-3">
+		<div id="docmenu" class="bs-sidebar hidden-print affix" data-spy="affix" data-offset-top="150" role="complementary">
+			<ul class="nav bs-sidenav">
+		        <li><a class="active" href="#overview">OpenBAN Overview</a>
+		          <ul class="nav">
+					<li><a href="#authentication">Authentication</a></li>
+					<li><a href="#datarepos">Data repos</a></li>
+					<li><a href="#apps">Apps</a></li>
+		          </ul>
+		         </li>
+
+		        <li><a href="#aggregate">Aggregate</a>
+		          <ul class="nav">
+					<li><a href="#aggregate-date-range">Date range</a></li>
+					<li><a href="#training-datastream">Training datastream</a></li>
+					<li><a href="#groundtruth-datastream">Groundtruth datastream</a></li>
+		          </ul>
+		         </li>	
+
+		        <li><a href="#analyze">Analyze</a>
+		          <ul class="nav">
+					<li><a href="#feature-window-size">Feature window size</a></li>
+					<li><a href="#features">Features</a></li>
+					<li><a href="#algorithms">Algorithms</a></li>
+					<li><a href="#training">Training</a></li>
+		          </ul>
+		         </li>	
+
+		        <li><a href="#act">Act</a>
+		          <ul class="nav">
+					<li><a href="#model-execution">Model execution</a></li>
+					<li><a href="#schedules">Schedules</a></li>
+		          </ul>
+		         </li>           
+			</ul>
+		</div>
+	</div>
+	
+	<div class="col-md-9" role="main">	
+    
+	    <!-- =============  overview ========== -->
+	    <div class="bs-docs-section">
+		    <div class="page-header">
+		      <h1 id="overview">Overview</h1>
+		    </div>
+		
+			OpenBAN is an analytic framework which enables user to 1) Aggregate and fuse building sensory data from diverse repostories; 
+				2) ..
+		
+		    <h3 id="authentication">Authentication</h3>
+		    <p>OpenBAN uses Dropbox App APIs (OAuth based) to authenticate the users. 
+		    	When you sign in to OpenBAN, Dropbox will ask you to give permission to create a folder named OpenBAN in your Dropbox.</p>		
+			    
+		    <h3 id="datarepos">Data Repos</h3>
+		    	<p>Data repos are sensory data collection services such as SensorAct, Xively and GreenButton. 
+		    	They typically provides APIs to store and retrieve sensor data.</p>
+		    	
+		    	<p>In order to Dropbox as one of the data repos, following directory tree has to be created. </p>
+		    	<p> <code>\Apps\OpenBAN\Datastore\{DatastreamName}\{ChannelName.csv}</code></p>
+		    	
+		    	<p>Your csv file must contain a header as <code>timestamp,value</code>. 
+		    	Subsequent lines must contain timestamp in ISO8601 or UNIX epoch time format and numeric value seprate by comma.</p>
+		    	  
+
+		    <h3 id="apps">Apps</h3>
+		    	<p>OpenBAN Apps are simple building data analytic pipleline. They consists of three phases: "Aggregate-Analyze-Act".
+		    	   All the app's configuration information will be stored in your Dropbox.
+		    	</p>
+			    
+	  	</div> <!-- overview -->
+
+	    <!-- =============  aggregate ========== -->
+	    <div class="bs-docs-section">
+		    <div class="page-header">
+		      <h1 id="aggregate">Aggregate</h1>
+		    </div>
+		
+		    <h3 id="aggregate-date-range">Aggregation date range</h3>
+		    <p>Select the from and to date ranges to fetch the sensory data points from different data repos.</p>		
+			<div class="bs-callout bs-callout-danger">
+			      <h4></h4>
+			      <p>Both <code>Aggregate-Analyze-Act</code></p>
+			    </div>
+		
+		    <h3 id="training-datastream">Training datastreams</h3>
+		    	<p>Select one or many datastreams that shall be used for training the models.</p>
+		
+		    <h3 id="groundtruth-datastream">Groundtruth Datastream</h3>
+			    <p>OpenBAN assumes that the required ground truch information is coming as specilized datastream.
+			    You need to select the datastream that may provide ground truth information. Later, we will provide and interface to annotate the training data stream to create ground truth data streams.
+			    </p>
+			    
+	  	</div> <!-- aggregate -->
+
+	    <!-- =============  analyze ========== -->
+	    <div class="bs-docs-section">
+		    <div class="page-header">
+		      <h1 id="analyze">Analyze</h1>
+		    </div>
+		
+		    <h3 id="feature-window-size">Feature window size</h3>
+		    <p>Enter the feature window size, in seconds. At present, we assume that all the features use the same window size.</p>		
+			
+		    <h3 id="features">Features</h3>
+		    	<p>Select a list of features for each training data stream.</p>
+		
+		    <h3 id="algorithms">Learning algorithms</h3>
+			    <p>Select any of the learning algorithm you want to train. Optionally, you may pass additonal parameters to them.</p>
+			    
+			<h3 id="training">Training</h3>
+		    	<p>When you click on the "Train the Model" button, OpenBAN will go and fetch the datastreams, compute the features and invoke the algorithem to learn the model parameters.
+		    	Learnt model infromation will be stored in your dropbox account.
+		    	</p>
+		    	
+		    	<p>At present, user needs to select the features and learning algorithm. In future, this process will be automated as OpenBAN will choose the right 
+		    	model and select the right feature for the given sensory datastream for specific building control application such as Occupany inferencing. 
+		    	Further, provision to export, import and share the models with other users will be provided soon.  
+		    	</p>
+			
+	  	</div> <!-- analyze -->
+
+	    <!-- =============  act ========== -->
+	    <div class="bs-docs-section">
+		    <div class="page-header">
+		      <h1 id="analyze">Actions</h1>
+		    </div>
+		
+		    <h3 id="model-execution">Model execution</h3>
+		    <p>After learning a speicific classification model, now user can execute them on live datastreams.
+		    The output generate by the model will be stored in your Dropbox and can furthere be used to do difference actions 
+		    </p>
+
+<!-- 		    		
+			    <div class="bs-callout bs-callout-danger">
+			      <h4>Do not attempt to include both.</h4>
+			      <p>Both <code>bootstrap.js</code> and <code>bootstrap.min.js</code> contain all plugins in a single file.</p>
+			    </div>
+-->	
+		    <h3 id="schedules">Execution schedules</h3>
+		    	<p>User can schedule the execution of the learnt model for specific application</p>
+		    	<p></p>
+	  	</div> <!-- act -->
+	  	    
+	</div> <!-- main -->
+</div> <!-- row -->
+
+
+		<div class="footer">
+			<p> © <a href="http://nesl.ee.ucla.edu/">NESL, UCLA</a> and 
+				<a href="http://pervasive.iiitd.edu.in/">MUC, IIIT-Delhi</a>
+			</p>
+		</div>
+
+	</div>
+</body>
+
+
+</html>

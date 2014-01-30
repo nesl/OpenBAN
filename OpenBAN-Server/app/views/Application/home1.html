@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>OpenBAN - Home</title>
+
+<!--
+<link type="text/css" rel="stylesheet"
+	href="http://layout.jquery-dev.net/lib/css/layout-default-latest.css">
+-->
+
+<link rel="stylesheet" type="text/css" media="screen"
+	href="@{'/public/stylesheets/layout-default-1.3.0.css'}">
+
+<!-- Bootstrap -->
+<link rel="stylesheet" type="text/css" media="screen"
+	href="@{'/public/stylesheets/bootstrap.css'}">
+	
+<link rel="stylesheet" type="text/css" media="screen"
+	href="@{'public/stylesheets/themes/smoothness/jquery-ui.css'}">
+
+<!-- <link rel="stylesheet" type="text/css" href="@{'/public/stylesheets/jquery.noty.css'}"> -->
+<!-- <link rel="stylesheet" type="text/css" href="@{'/public/stylesheets/noty_theme_twitter.css'}"> -->
+
+<link rel="stylesheet" type="text/css" media="screen"
+	href="@{'/public/stylesheets/jumbotron-narrow.css'}">
+
+<link rel="stylesheet" type="text/css" media="screen"
+	href="@{'/public/stylesheets/font-awesome.min.css'}">
+
+
+<style type="text/css">
+#container11 {
+	background: #ddd;
+	min-height: 700px;
+	max-width: 730px;
+	position: absolute;
+	top: 50px; /* margins in pixels */
+	bottom: 50px; /* could also use a percent */
+	left: 10px;
+	right: 10px;
+}
+
+.pane {
+	display: none; /* will appear when layout inits */
+}
+</style>
+
+<!-- 
+<script type="text/javascript" src="http://layout.jquery-dev.net/lib/js/jquery-latest.js"></script>
+<script type="text/javascript" src="http://layout.jquery-dev.net/lib/js/jquery-ui-latest.js"></script>
+<script type="text/javascript" src="http://layout.jquery-dev.net/lib/js/jquery.layout-latest.js"></script>
+<script type="text/javascript" async="" src="http://www.google-analytics.com/ga.js"></script>
+ -->
+
+<script type="text/javascript" src="@{'public/javascripts/jquery-2.0.2.js'}"></script>
+<script type="text/javascript" src="@{'public/javascripts/jquery-ui-1.10.3.custom.min.js'}"></script>
+<script type="text/javascript" src="@{'/public/javascripts/jquery.layout-1.3.0.min.js'}"></script>
+<script type="text/javascript" src="@{'/public/javascripts/bootstrap.min.js'}"></script>
+
+<script type="text/javascript" src="@{'/public/javascripts/bootbox.js'}"></script>
+
+<script src="@{'/public/javascripts/jquery.noty.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+<script src="@{'/public/javascripts/jquery.blockUI.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+    
+<script type="text/javascript">
+
+function blockUImsg(msg) {
+	$.blockUI( { message: '<h1><img src="./public/images/busy2.gif"/>' + msg + '</h1>', css:{border: 'none', 
+            padding: '15px', 
+            backgroundColor: '#000', 
+            '-webkit-border-radius': '10px', 
+            '-moz-border-radius': '10px', 
+            opacity: .5, 
+            color: '#fff' } });
+}
+
+function registerRepo(repo, username, key) {
+	
+	var param = "repo=" + repo + "&username=" + username + "&key=" + key;	
+	//alert(param);
+			
+	//alert("before");
+	//$.blockUI({ message: '<h1>Fetching Feeds...</h1>' });
+	blockUImsg("Wait.. registering new repo");
+	
+	$.ajax({
+		type: "PUT",
+		url: "repo/register",
+		data: param,
+		cache: false,
+		success: function (response) {
+		    $.unblockUI();
+			//alert("ajax success " + response);
+			if(response === "Success" ) {
+				var lihtml = '<li><a href="#" class = "' + repo + '" >' + repo + '</a></li>';				
+				$( ".repolist" ).prepend(lihtml);				
+				$(".norepo").remove();
+		    	bootbox.alert("New repo " + repo + " registered successfully!");
+			} else {
+				bootbox.alert( "Dropbox Error " + response);
+			}
+		},
+		complete: function (xhr, ajaxOptions, thrownError) {
+			//alert("ajax completed");
+			$.unblockUI();
+		},		
+		error: function (xhr, ajaxOptions, thrownError) {			
+			bootbox.alert( "Error occured : " + xhr.status + thrownError + " Try again later!");
+			$( "#register-repo-dialog" ).dialog("open");
+		}
+	});
+}
+
+$(document).on("click", ".registerNewRepo", function(e) {
+	$( "#register-repo-dialog" ).dialog("open");
+});
+
+$(document).on("click", ".repolist", function(e) {
+	var t = $( ".repolist" );
+	//alert(t.val());
+});
+
+$(function() {
+	
+	/*
+	var new_repo = "NNN";	
+	var lihtml = '<li><a href="#" class = "' + new_repo + '" >' + new_repo + '</a></li>';
+	$( ".repolist" ).prepend(lihtml);
+	*/
+	
+	var res = "aa";
+	
+	$( ".repolist" ).each(function( index ) {
+	  
+		if( $(this).text() === "No Registered Repos") {
+			$(this).remove();
+			alert("removing..." + index)
+		}
+		console.log( index + ": " + $(this).text() );	  
+	});
+	
+	var repo = $( "#repoList" ),
+		name = $( "#inputUser" ),
+    	key = $( "#inputKey" ),
+    	progress = $("#registerRepoProgress"),
+    	tips = $( ".validateTips" );
+		
+		progress.css("visibility", "hidden");
+	
+	function updateTips( t ) {
+	      tips
+	        .text( t )
+	        .addClass( "ui-state-highlight" );
+	      setTimeout(function() {
+	        tips.removeClass( "ui-state-highlight", 1500 );
+	      }, 2000 );
+	    }
+	 
+	    function checkLength( o, n, min, max ) {
+	      if ( o.val().length > max || o.val().length < min ) {
+	        o.addClass( "ui-state-error" );
+	        updateTips( "Length of " + n + " must be between " +
+	          min + " and " + max + "." );
+	        return false;
+	      } else {
+	        return true;
+	      }
+	    }
+	    
+$( "#register-repo-dialog" ).dialog({
+    autoOpen: false,
+    modal: true,
+    resizable: false,
+    height: 'auto',
+    width: 'auto',
+    buttons: {
+      "Register": function() {
+    	  
+		tips.text("");
+      	name.removeClass( "ui-state-error" );
+        key.removeClass( "ui-state-error" );
+        
+        var bValid = true;
+        bValid = bValid && checkLength( name, "name", 3, 16 );
+        bValid = bValid && checkLength( key, "key", 32, 48 );
+        
+        if ( bValid ) {
+        	progress.css("visibility", "inline");
+    		//name.attr("disabled", true);
+        	registerRepo(repo.val(), name.val(), key.val());        		
+			$( this ).dialog( "close" );          	
+        }
+        
+      },
+      Cancel: function() {
+        $( this ).dialog( "close" );
+      }
+    },
+    close: function() {
+      //allFields.val( "" ).removeClass( "ui-state-error" );
+    	name.val("").removeClass( "ui-state-error" );
+        key.val("").removeClass( "ui-state-error" );
+        //tips.text("");
+    }
+  });
+  
+});
+	
+	$(document).ready(function() {
+
+		$("#accordion-west").accordion();
+
+		$( "#register-repo-dialogdd" ).dialog({
+			modal: true,  
+			autoOpen: false,
+		      height: 'auto',
+		      width: 'auto',
+		      resizable: false
+		    });
+		
+		// OUTER/PAGE LAYOUT
+		pageLayout = $("#container1").layout({ // DO NOT use "var pageLayout" here
+			west__size : .30,
+			east__size : .30,
+			south__initClosed : true,
+			north__initClosed : true,
+			west__onresize : $.layout.callbacks.resizePaneAccordions // west accordion a child of pane
+			,
+			east__onresize : $.layout.callbacks.resizePaneAccordions
+		// east accordion nested inside a tab-panel
+		});
+
+		// TABS IN CENTER-PANE
+		// create tabs before wrapper-layout so elems are correct size before creating layout
+		pageLayout.panes.center.tabs({
+			activate : $.layout.callbacks.resizeTabLayout
+		// tab2-accordion is wrapped in a layout
+		});
+
+	});
+</script>
+
+</head>
+
+<body style="zoom: 1; overflow: auto; cursor: auto;">
+
+	<div class="container">
+	
+		<div class="header">
+			<ul class="nav nav-pills pull-right">
+			
+				<li class="dropdown" style="z-index:1001"> <a href="#" class="dropdown-toggle" data-toggle="dropdown">							
+					<i class="glyphicon glyphicon-user"></i> ${username} <b class="caret"></b></a>								
+						<ul class="dropdown-menu">
+							<li><a href="/signout"> <i class="glyphicon glyphicon-log-out"></i> Sign out </a></li>
+							<li><a href="/help"> <i class="glyphicon glyphicon-info-sign"></i> Help </a></li>
+						</ul>
+				</li>
+				
+			
+			</ul>
+			
+			<h2 class="text-primary">OpenBAN</h2>
+			
+			<!-- 
+			<i class="icon-cogs icon-4x" style="color:#f00"></i> icon-camera-retro
+			<i class="glyphicon glyphicon-search" style="color:#0f0; font-size: 4em"></i> Search						
+			<button type="submit" class="btn"> <i class="glyphicon glyphicon-search" style="color:#0f0; font-size: 2em"></i> Search</button>
+	 		-->
+			
+		</div>
+
+			<!--  <p>Content here. <a class="alert" href=#>Alert!</a></p>
+              -->          
+          
+          
+	<div id="register-repo-dialog" style="z-index:1010" title="Register new data repository">
+	
+  		<p class="validateTips">All form fields are required.</p>
+  		
+		<form class="bs-example form-horizontal">
+		
+			<fieldset>	
+				
+				<div class="form-group">
+	                    <label for="select" class="col-lg-2 control-label">Repo</label>
+	                    <div class="col-lg-10">
+	                      <select class="form-control" id="repoList">
+	                        <option>GreenButton</option>
+							<option>Xively</option>
+	                        <option>SensorAct</option>
+	                      </select>
+	                    </div>
+				</div>
+	                  
+				<div class="form-group">
+                    <label for="inputEmail" class="col-lg-2 control-label">User</label>
+                    <div class="col-lg-10">
+                      <input type="text" class="form-control" id="inputUser" placeholder="">
+                    </div>
+                  </div>
+
+				<div class="form-group">
+                    <label for="inputEmail" class="col-lg-2 control-label">Key</label>
+                    <div class="col-lg-10">
+                      <input type="text" class="form-control" id="inputKey" placeholder="">
+                    </div>
+				</div>                  				
+                
+	    </fieldset>
+	  	</form>
+	  	
+		  	<div id="registerRepoProgress">
+	              	<div class="progress progress-striped active">
+	                <div class="progress-bar" style="width: 45%"></div>
+	              </div>
+			</div>
+            
+	</div>
+                
+		<div class="bs-example">
+			<div class="navbar navbar-inverse">
+				<div class="container">
+				
+					<div class="navbar-header">					
+						<button type="button" class="navbar-toggle" data-toggle="collapse"
+							data-target=".navbar-responsive-collapse">							
+							<span class="icon-bar"> ddd </span> <span class="icon-bar">dddd</span> <span
+								class="icon-bar"></span>
+						</button>							
+						<a class="navbar-brand active" href="#"> 
+						<i class="glyphicon glyphicon-tasks"></i> 
+							Current App name
+						</a>						
+					</div>
+							
+					<div class="navbar-collapse collapse navbar-inverse-collapse">
+						<ul class="nav navbar-nav">
+						
+						
+							<li class="active"><a href="#">Active</a></li>
+							
+							 <li><a href="#">Link</a></li>
+							 
+						</ul>
+						
+						 <!-- 
+						<form class="navbar-form navbar-left">
+							<input type="text" class="form-control col-lg-8"
+								placeholder="Search">
+						</form>
+						 -->
+						
+						
+						<ul class="nav navbar-nav navbar-right">
+						
+													<li class="dropdown"><a href="#" class="dropdown-toggle"
+								data-toggle="dropdown"> <i class="glyphicon glyphicon-list"></i> My Apps <b class="caret"></b></a>
+								<ul class="dropdown-menu">								
+									<li><a href="#">App1</a></li>
+									<li><a href="#">App2</a></li>									
+									<li class="divider"></li>									
+									<li><a href="#">Create New</a></li>									
+								</ul></li>
+							
+							<li class="dropdown"><a href="#" class="dropdown-toggle"
+								data-toggle="dropdown"> <i class="glyphicon glyphicon-cloud"></i> My Data Repos <b class="caret"></b></a>
+								<ul class="dropdown-menu repolist">
+										%{
+										    if(repos == null ){
+										 %}
+											<li class="dropdown-header norepo">No Registered Repos</li>
+										 %{ 
+										    }
+										  %}
+								  
+									#{list repos, as:'repo'}
+									<li><a href="#" class = "${repo}" > ${repo}</a></li>
+									#{/list}
+									
+									<li class="divider"></li>
+									<li><a href="#" class = "registerNewRepo" > 
+									<i class="icon-plus"> </i> Register New Repo</a></li>																		
+								</ul></li>						
+						</ul>
+						
+					</div>
+					<!-- /.nav-collapse -->
+				</div>
+				<!-- /.container -->
+			</div>
+			<!-- /.navbar -->
+		</div>
+
+		<div id="container1" class="ui-layout-container"
+			style="overflow: hidden; min-width: 930px; min-height: 400px;">
+
+
+			<div class="panel panel-primary pane ui-layout-pane ui-layout-pane-center ui-layout-center">
+
+				<div class="panel-heading ">
+					<h3 class="panel-title ">Analyze</h3>
+				</div>
+				<div class="panel-body">Panel content</div>
+
+			</div>
+
+
+			<div
+				class="pane ui-layout-pane ui-layout-pane-east ui-layout-east panel panel-primary">
+
+				<div class="panel-heading">
+					<h3 class="panel-title">Action</h3>
+				</div>
+				<div class="panel-body">Data stores</div>
+
+			</div>
+
+			<div
+				class="ui-layout-west panel panel-primary pane ui-layout-pane ui-layout-pane-west active"
+				style="position: relative; margin: 0px; left: 0px; right: auto; top: 130px; bottom: 47px; height: 265px; z-index: 0; width: 100px; display: block; visibility: visible;">
+
+				<div class="panel-heading">
+					<h3 class="panel-title">Aggregation</h3>
+				</div>
+				
+				<!--				<div class="ui-widget-header no-scrollbar add-padding"
+					style="margin: 0 1px;">Data store</div>
+ -->
+				<div id="accordion-west"
+					class="ui-accordion ui-widget ui-helper-reset" role="tablist">
+
+					<h3
+						class="ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all"
+						role="tab" id="ui-accordion-accordion-west-header-0"
+						aria-controls="ui-accordion-accordion-west-panel-0"
+						aria-selected="false" tabindex="-1">
+						<span
+							class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-e"></span><a
+							href="#">Data streams</a>
+					</h3>
+					<div
+						class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom"
+						style="display: none; height: 318.8125px; overflow: auto;"
+						id="ui-accordion-accordion-west-panel-0"
+						aria-labelledby="ui-accordion-accordion-west-header-0"
+						role="tabpanel" aria-expanded="false" aria-hidden="true">
+						<b>Accordion inside a layout-pane</b>
+						<p>paragraph</p>
+						<p>.</p>
+					</div>
+
+					<h3
+						class="ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all"
+						role="tab" id="ui-accordion-accordion-west-header-1"
+						aria-controls="ui-accordion-accordion-west-panel-1"
+						aria-selected="false" tabindex="-1">
+						<span
+							class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-e"></span><a
+							href="#">Section 2</a>
+					</h3>
+					<div
+						class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom"
+						style="display: none; height: 318.8125px; overflow: auto;"
+						id="ui-accordion-accordion-west-panel-1"
+						aria-labelledby="ui-accordion-accordion-west-header-1"
+						role="tabpanel" aria-expanded="false" aria-hidden="true">
+						<p style="font-weight: bold;">Sed Non Urna</p>
+						<p>para1</p>
+						<p>para2.</p>
+					</div>
+
+					<h3
+						class="ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all"
+						role="tab" id="ui-accordion-accordion-west-header-2"
+						aria-controls="ui-accordion-accordion-west-panel-2"
+						aria-selected="false" tabindex="-1">
+						<span
+							class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-e"></span><a
+							href="#">Section 3</a>
+					</h3>
+					<div
+						class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom"
+						style="display: none; height: 318.8125px; overflow: auto;"
+						id="ui-accordion-accordion-west-panel-2"
+						aria-labelledby="ui-accordion-accordion-west-header-2"
+						role="tabpanel" aria-expanded="false" aria-hidden="true">dd
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+
+		<div class="footer">
+			<p>© NESL, UCLA</p>
+		</div>
+		
+	</div>
+	
+</body>
+
+</html>

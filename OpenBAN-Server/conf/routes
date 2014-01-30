@@ -4,6 +4,42 @@
 
 # Home page
 GET     /                                       Application.index
+GET     /help                                   Application.help
+
+GET     /signin                                 Application.signin
+GET     /signout                                Application.signout
+
+GET     /home                                   Application.home
+GET     /home/{appname}                         Application.homeApp
+
+POST    /app/save                               Application.saveApp
+# GET     /app/load                               Application.loadApp
+
+GET     /feature/list                           Application.featureList
+POST    /feature/test                           Application.featureTest
+
+POST    /train                                  Application.trainModal
+POST    /execute                                Application.executeModal
+POST    /app/schedule                           Application.scheduleApp
+
+GET     /data                                   Application.getData
+GET     /data/json                              Application.getDataJson
+GET     /data/json1                             Application.getDataJson1
+GET     /data/json2                             Application.getDataJson2
+GET     /data/json2all                          Application.getDataJson2All
+GET     /data/json3                             Application.getDataJson3
+
+GET     /test                                   Application.test
+
+PUT     /repo/register                          Application.registerRepo
+GET     /repo/list                              Application.datastreamList
+
+GET     /auth/dropbox/request                   DropboxAuthentication.dropboxAuthRequest
+GET     /auth/dropbox/response                  DropboxAuthentication.dropboxAuthResponse
+
+# GET     /dropbox/authenticate                   Application.dropboxAuthenticate
+# GET     /dropbox/response                       Application.dropboxResponse
+# GET     /dropbox/list                           DropboxAuthentication.dbxFolders
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

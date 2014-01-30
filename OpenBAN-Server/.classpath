@@ -2,9 +2,8 @@
 <classpath>
 	<classpathentry excluding="views/**" kind="src" path="app"/>
 	<classpathentry kind="src" path="test"/>
-	
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/opt/play-1.2.4/framework/play-1.2.4.jar" sourcepath="/opt/play-1.2.4/framework/src" />
+	<classpathentry kind="lib" path="/opt/play-1.2.4/framework/play-1.2.4.jar" sourcepath="/opt/play-1.2.4/framework/src"/>
 	<classpathentry kind="lib" path="/opt/play-1.2.4/framework/lib/junit-4.8.1.jar"/>
 	<classpathentry kind="lib" path="/opt/play-1.2.4/framework/lib/memcached-2.6.jar"/>
 	<classpathentry kind="lib" path="/opt/play-1.2.4/framework/lib/asm-all-3.3.1.jar"/>
@@ -79,6 +78,11 @@
 	<classpathentry kind="lib" path="/opt/play-1.2.4/framework/lib/bcprov-jdk15-1.45.jar"/>
 	<classpathentry kind="lib" path="/opt/play-1.2.4/framework/lib/cglib-nodep-2.2.jar"/>
 	<classpathentry kind="lib" path="/opt/play-1.2.4/framework/lib/org.eclipse.jdt.core-3.8.0.v_C03.jar"/>
-	
+	<classpathentry kind="lib" path="lib/commons-math3-3.2.jar"/>
+	<classpathentry kind="lib" path="lib/dropbox-core-sdk-0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-core-2.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/jython.jar"/>
+	<classpathentry kind="lib" path="lib/quartz-all-2.1.5.jar"/>
+	<classpathentry kind="lib" path="lib/super-csv-2.1.0.jar"/>
 	<classpathentry kind="output" path="eclipse/classes"/>
 </classpath>
