@@ -74,6 +74,7 @@ import edu.pc3.openban.datastore.DropboxSessionManager;
 
 public class DropboxAuthentication extends Controller {
 	
+	// app name
 	public static String APP_NAME = "OpenBAN";
 	
 	// refer /routes file
