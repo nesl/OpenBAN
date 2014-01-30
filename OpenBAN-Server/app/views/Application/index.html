@@ -1,4 +1,137 @@
-#{extends 'main.html' /}
-#{set title:'Home' /}
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to OpenBAN</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-#{welcome /}
+<!-- <link rel="stylesheet" type="text/css" media="screen" href="@{'public/stylesheets/themes/smoothness/jquery-ui.css'}" /> -->
+<!-- <link rel="stylesheet" type="text/css" href="@{'/public/stylesheets/jquery.noty.css'}"> -->
+<!-- <link rel="stylesheet" type="text/css" href="@{'/public/stylesheets/noty_theme_twitter.css'}"> -->
+
+<!-- Bootstrap -->
+<link rel="stylesheet" type="text/css" media="screen"
+	href="@{'/public/stylesheets/bootstrap.css'}">
+<link rel="stylesheet" type="text/css" media="screen"
+	href="@{'/public/stylesheets/jumbotron-narrow.css'}">
+
+<link rel="stylesheet" type="text/css" media="screen"
+	href="@{'/public/stylesheets/font-awesome.min.css'}">
+	
+<link href="@{'/public/stylesheets/main.css'}" rel="stylesheet" type="text/css">
+	
+<script type="text/javascript" src="@{'public/javascripts/jquery-2.0.2.js'}"></script>
+<script type="text/javascript" src="@{'public/javascripts/jquery-ui-1.10.3.custom.min.js'}"></script>
+
+<script type="text/javascript">
+
+var FlashAlert = (function() {
+	    "use strict";
+
+	    var elem,
+	        hideHandler,
+	        that = {};
+
+	    that.init = function(options) {
+	        elem = $(options.selector);
+	    };
+
+	    that.show = function(text) {
+	        clearTimeout(hideHandler);
+
+	        elem.find("span").html(text);
+	        elem.delay(200).fadeIn().delay(4000).fadeOut();
+	    };
+
+	    return that;
+	}());
+
+
+$(document).ready(function() {
+
+	FlashAlert.init( {"selector": ".bb-flash-alert"} );
+
+	var flashmsg=  '${flashmsg}';
+	//alert(flashmsg);
+	if(flashmsg.length > 0 ){
+		FlashAlert.show(flashmsg);	
+	}
+
+    $("#trynow").click(function(event){
+    	if($(this).val().length == 0 ) return;
+    	alert("trying now...");
+   });
+
+    /*
+    message = "${message}";
+    
+    if(message.length == 0) {
+    	$(".msg-status").css( {display: "none"});    	
+    }
+    
+    if(message.length > 0) {
+        setTimeout(function(){          
+      	  $(".msg-status").fadeOut("slow", function () {
+      	  $(".msg-status").remove();
+      	      }); }, 5000);    	
+    }*/
+    
+});
+</script>
+
+</head>
+
+<body>
+
+	<div class="bb-flash-alert alert alert-success" style="display:none;">
+        <span></span>
+    </div>
+
+	<div class="container">
+
+		<div class="header">
+			<ul class="nav nav-pills pull-right">
+				<li class="active"><a href="#">Home</a></li>
+				<li><a href="./help">Help</a></li>
+			</ul>
+						
+			<h2 class="text-primary">OpenBAN</h2>
+		</div>
+
+		<div class="jumbotron">
+			<h1>Open Building data Analytic Framework</h1>
+			<p class="lead">..</p>
+			<p>
+				<a class="btn btn-lg btn-primary" href="./signin" id="trynow">
+				<i class="icon-dropbox icon-2x"></i> Try Now</a>				
+			</p>
+		</div>
+
+		<div class="row marketing">
+		
+			<div class="col-lg-4">
+				<h3><i class="icon-cloud-download icon-2x text-primary"></i> Aggregate </h3>
+				<p>Aggregate building sensor data from multiple cloud and in-house repositories.</p>
+			</div>
+
+			<div class="col-lg-4">
+				<h3><i class="icon-cogs icon-2x text-success"></i> Analyze</h3>
+				<p>Apply sophisticated analytical models and extract rich inferences from diverse sensory data.</p>
+			</div>
+
+			<div class="col-lg-4">
+				<h3><i class="icon-beaker icon-dashboard icon-2x text-danger"></i> Act</h3>
+				<p>Make use of the context inferences and develop novel building control applications.</p>
+			</div>
+		</div>
+
+		<div class="footer">
+			<p> © <a href="http://nesl.ee.ucla.edu/">NESL, UCLA</a> and 
+				<a href="http://pervasive.iiitd.edu.in/">MUC, IIIT-Delhi</a>
+			</p>
+		</div>
+
+	</div>
+</body>
+
+
+</html>
