@@ -1,2 +1,2 @@
-dropbox.conf
-ssl.conf
+conf/dropbox.conf
+conf/ssl.conf
