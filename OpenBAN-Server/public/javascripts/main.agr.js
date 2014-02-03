@@ -122,7 +122,7 @@ $(function() {
 		        // The clicked node is 'event.node'
 		        var node = event.node;
 	    	  	// leaf node 
-	    	  	if(node.children.length == 0 ) {
+	    	  	if(node.getLevel() == 3 ) {
 		        	//alert(node.name + " is leaf");	        	
 		        	//$('#example').dataTable( { "sAjaxSource": "/data/json1"} );
 		        	updateAggregateTable(node.parent.name, node.name);
@@ -136,7 +136,7 @@ $(function() {
 		        // The clicked node is 'event.node'
 		        var node = event.node;
 		        
-	    	  	if(node.children.length == 0 ) {
+	    	  	if(node.getLevel() == 3 ) {
 		        	// alert(node.name + " is leaf");	        	
 		        	// $('#example').dataTable( { "sAjaxSource": "/data/json1"} );
 	    	  		updateAggregateTable(node.parent.name, node.name);
