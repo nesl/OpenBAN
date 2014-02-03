@@ -29,6 +29,9 @@ $(function() {
 	    numberOfMonths: 1,
 	    onClose: function( selectedDate ) {
 	      $( "#aggregate_to_datepicker" ).datepicker( "option", "minDate", selectedDate );
+	    },
+	    onSelect: function( selectedDate ) {
+	    	appProfileChanged();
 	    }
 	  });
 	  $( "#aggregate_to_datepicker" ).datepicker({
@@ -38,6 +41,9 @@ $(function() {
 	    numberOfMonths: 1,
 	    onClose: function( selectedDate ) {
 	      $( "#aggregate_from_datepicker" ).datepicker( "option", "maxDate", selectedDate );
+	    },
+	    onSelect: function( selectedDate ) {
+	    	appProfileChanged();
 	    }
 	  });
 
@@ -55,6 +61,45 @@ $(function() {
 		add_to = "training";
 		$("#add-datastream-dialog").dialog("open");
 	});
+	
+	$(document).on("click", "#remove_training_DataStream", function(e) {
+  	  	var $tree = $('#aggregate_training_tree');
+		var node = $tree.tree('getSelectedNode');
+		
+		if(node && node.getLevel() != 3 ) {
+			FlashAlert.show("Select a datastream and then click on 'Remove'");
+			return;
+		}
+			
+		var fdsname = node.name;
+		var freponame = node.parent.name;			
+		//remove the corresponding nodes from features tree as well			
+		var $ftree = $('#analyze_features_tree');    		  
+		root = $ftree.tree('getNodeById', 1);
+		for (var i=0; i < root.children.length; i++) {				
+			var arepo = root.children[i];
+			if(arepo.name == freponame) {
+				for (var j=0; j < arepo.children.length; j++) {
+					if(arepo.children[j].name == fdsname) {
+						alert("removing " + arepo.children[j].name + " from " + arepo.name);
+						if(arepo.children.length == 1) {
+							$ftree.tree("removeNode", arepo);	
+						} else {
+							$ftree.tree("removeNode", arepo.children[j]);
+						}						
+					}
+				}
+			}
+		} // for i
+		if(node.parent.children.length == 1) {
+			$tree.tree("removeNode", node.parent);	
+		} else {
+			$tree.tree("removeNode", node);
+		}	
+		FlashAlert.show("You removed datastream " + fdsname + " from " + freponame);
+		appProfileChanged();	
+	});
+	
 	
 	$(document).on("click", "#add_groundtruth_DataStream", function(e) {	
 		$.getJSON(
@@ -197,7 +242,9 @@ $(function() {
 	        	  //alert(root.name);    	  
 	        	  //$t.tree( 'appendNode', { label: full_name }, root );    		  
 	    	  }
-	    		
+	    	
+	    	  appProfileChanged();
+	  	   
 	    	  /*
 	    	  for (var key in node) {
 	    		  alert(key + "=" + node[key]);
@@ -216,7 +263,30 @@ $(function() {
 }); // jquery
 
 
+function checkAggregateDateRange() {
+	var from_date = $('#aggregate_from_datepicker');
+	var to_date = $('#aggregate_to_datepicker');
+
+	var d1 = new Date(from_date.val());
+	var d2 = new Date(to_date.val());	
+	//alert(d1+d2);	
+	if(isNaN(d1.getTime()) || isNaN(d2.getTime())) {
+		FlashAlert.show('Select valid aggregation date range to display the data points');
+		return false;
+	}	
+	return true;
+}
+
+
 function updateAggregateTable(service, datastream) {
+	
+	if(!checkAggregateDateRange()){
+		return;
+	}
+	
+	if(!isAppSaved()) {
+		return;
+	}
 	
 	var from_date = $('#aggregate_from_datepicker');
 	var to_date = $('#aggregate_to_datepicker');

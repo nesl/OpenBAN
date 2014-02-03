@@ -199,7 +199,7 @@ public class DropboxDataStore {
 		return dirList;
 	}
 
-	public List<String> getAppList() {
+	public List<String> getAppList() throws DbxException {
 
 		DbxEntry.WithChildren dbxEntry;
 
@@ -207,17 +207,12 @@ public class DropboxDataStore {
 
 		try {
 			dbxEntry = dropboxClient.getMetadataWithChildren(APPS_DIR);
-
 			if (dbxEntry == null) {
 				return null;
 			}
-
-			// System.out.println("# items in /: " + dbxEntry.children.size());
-
 			for (DbxEntry d : dbxEntry.children) {
 				if (d.isFile()) {
-					System.out.println("fetching .... " + d.name + "   "
-							+ d.path);
+					//System.out.println("fetching .... " + d.name + "   "	+ d.path);
 					if (d.name.endsWith(APP_INFO_EXT)) {
 						apps.add(d.name.replace(APP_INFO_EXT, ""));
 					}
@@ -225,9 +220,9 @@ public class DropboxDataStore {
 			}
 
 		} catch (DbxException ex) {
-			ex.printStackTrace();
+			//ex.printStackTrace();
 			System.err.println("Error in getAccountInfo(): " + ex.getMessage());
-			return null;
+			throw ex;
 		}
 
 		if (apps.size() == 0)
@@ -236,18 +231,18 @@ public class DropboxDataStore {
 		return apps;
 	}
 
-	public List<RepoProfile> getRepoList() {
+	public List<RepoProfile> getRepoList() throws DbxException {
 
-		System.out.println("inside getRepoList..");
+		//System.out.println("inside getRepoList..");
 
 		DbxEntry.WithChildren dbxEntry;
 		List<RepoProfile> repoProfiles = new ArrayList<RepoProfile>();
-		System.out.println("befoer ggf....................");
+		//System.out.println("befoer ggf....................");
 
 		RepoProfile dbxRepo = getDropboxRepoProfile();
-		System.out.println("befoer if....................");
+		//System.out.println("befoer if....................");
 		if (dbxRepo != null) {
-			System.out.println("inside....................");
+			//System.out.println("inside....................");
 			repoProfiles.add(0, dbxRepo);
 		}
 
@@ -255,15 +250,15 @@ public class DropboxDataStore {
 			dbxEntry = dropboxClient.getMetadataWithChildren(REPO_PROFILE_DIR);
 			
 			if (dbxEntry != null) {
-				System.out.println("# items in /: " + dbxEntry.children.size());
+				//System.out.println("# items in /: " + dbxEntry.children.size());
 				for (DbxEntry d : dbxEntry.children) {
 					if (d.isFile()) {
-						System.out.println("fetching .... " + d.name + "   "
-								+ d.path);
+						//System.out.println("fetching .... " + d.name + "   "
+							//	+ d.path);
 						RepoProfile profile = readRepoProfile(d.path);
 						if (profile != null) {
-							System.out.println(" name      "
-									+ profile.getReponame());
+							//System.out.println(" name      "
+								//	+ profile.getReponame());
 							repoProfiles.add(profile);
 						}
 
@@ -271,14 +266,14 @@ public class DropboxDataStore {
 				}
 			}
 		} catch (DbxException ex) {
-			ex.printStackTrace();
+			//ex.printStackTrace();
 			System.err.println("Error in getAccountInfo(): " + ex.getMessage());
-			//return null;
+			throw ex;
 		}
 		return repoProfiles;
 	}
 
-	public RepoProfile getDropboxRepoProfile() {
+	public RepoProfile getDropboxRepoProfile() throws DbxException {
 
 		RepoProfile dbxProfile = new RepoProfile(Const.DROPBOX, Const.DROPBOX, null, null, null);
 
@@ -289,7 +284,7 @@ public class DropboxDataStore {
 		
 		if (dirList != null) {
 			for (String dir : dirList) {
-				System.out.println("looking at " + DATASTORE_DIR + "/" + dir);
+				//System.out.println("looking at " + DATASTORE_DIR + "/" + dir);
 				List<String> fileList = getFileList(DATASTORE_DIR + "/" + dir,
 						DATASTORE_FILE_EXT);
 				if (fileList != null) {

@@ -339,8 +339,12 @@ public class Application extends Controller {
 		String userId = session.get(SESSION_KEY);				
 		//String token = DropboxSessionManager.getAccessToken(userId);
 		
-		new UserProfileManager(userId).loadProfile();
-
+		try {
+			new UserProfileManager(userId).loadProfile();	
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
 		String app = AppManager.getRecentApp(userId);
 		
 		System.out.println("Recent app :" + app);
@@ -359,8 +363,12 @@ public class Application extends Controller {
 		String userId = session.get(SESSION_KEY);				
 		//String token = DropboxSessionManager.getAccessToken(userId);
 		
-		new UserProfileManager(userId).loadProfile();
-		
+		try {
+			new UserProfileManager(userId).loadProfile();	
+		} catch(Exception e) {			
+			session.put(FLASH_MSG, "Unable to load user profile ");
+		}
+				
 		// load app data...
 
 		// TODO: to handle null pointer exception
@@ -368,6 +376,7 @@ public class Application extends Controller {
 		renderArgs.put("aggregate_groundtruth_tree", "");
 		renderArgs.put("feature_window_size", "");				
 		renderArgs.put("analyze_features_tree", "");				
+		renderArgs.put("act_consumer_tree", "");
 		
 		if(!appname.equals(NEW_APP)) {
 			
@@ -409,8 +418,8 @@ public class Application extends Controller {
 		List<String> repos = new UserProfileManager(userId).getRepoProfileNames();
 		List<String> apps = new UserProfileManager(userId).getAppNames();
 		
-		System.out.println("apps  " + apps);
-		System.out.println("repos  " + repos);
+		//System.out.println("apps  " + apps);
+		//System.out.println("repos  " + repos);
 		
 		String flashmsg = session.get(FLASH_MSG);
 		session.remove(FLASH_MSG);
@@ -420,7 +429,7 @@ public class Application extends Controller {
 		renderArgs.put("applist", apps);
 		renderArgs.put("repolist", repos);		
 		renderArgs.put("userid", userId);
-		renderArgs.put("username", DropboxDataStore.getInstance(userId).getDisplayName());
+		renderArgs.put("username", new UserProfileManager(userId).getDisplayName());
 		
 		renderArgs.put("classifiers", classifiers);
 		

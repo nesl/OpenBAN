@@ -3,6 +3,20 @@ $(function() {
 	// TODO: layout initialization is done at main.js
 	// $("#analyze_container").layout(});
 
+	jQuery('#feature_window_size').on('input', function() {
+	    // do your stuff
+		
+		var window_size = $.trim($('#feature_window_size').val());
+		i_window_size = parseInt(window_size, 10);
+
+		if(isNaN(i_window_size) || i_window_size <= 0 || i_window_size >3600) {
+			FlashAlert.show('Invalid feature window size. Valid range is 1-3600');
+			return;		
+		}	
+		$('#feature_window_size').val(i_window_size);
+
+	})
+	
 	$(document).on("click", "#analyze_add_feature", function(e) {
 		
   	  	var $tree = $('#analyze_features_tree');
@@ -69,44 +83,15 @@ $(function() {
 			
 			if(validNode) {
 				FlashAlert.show("You removed feature " + node.name + " from " + node.parent.name);
-				$tree.tree("removeNode", node);
+				$tree.tree("removeNode", node);								
+		    	appProfileChanged();
 			} else {
 				FlashAlert.show("Select a feature name below and then click on Remove feature");
 			}
 	});
 
-	$(document).on("click", "#analyze_train_the_model", function(e) {
-		
-		var classifier_name = $('#classifier_name').val();
-
-		//TODO: all the validations..
-		// and save the project..
-		msg = "Learning  model " + classifier_name + "... Please wait. This may take several minutes";
-		blockUImsg(msg);
-		
-		var appname = $.trim($("#current_app_name").text());
-		var parm = "appname="+appname;
-
-		$.ajax({
-            type: 'POST',              
-            url: '/train',
-    		cache: false,
-            data: parm
-		})
-		.done( function (response) { 			
-            	if(response == "Success") {
-            		FlashAlert.show("Learnt modal " + classifier_name + " successfully!");
-            	} else {
-            		bootbox.alert("Error while learning modal " + classifier_name + ": " + response);
-            	}
-		})
-		.always(function() { 
-			$.unblockUI(); 
-		})
-		.fail(function(jqxhr, textStatus, error) { 
-			bootbox.alert( "Error occured : " + jqxhr.status + ", " + error + " Try again later!");
-		});
-
+	$(document).on("click", "#analyze_train_the_model", function(e) {		
+		trainModel();
 	});
 	
 	$('#analyze_features_tree').bind(
@@ -218,7 +203,8 @@ $(function() {
 	    		  if(is_duplicate) {
 	    			  duplicate_features.push(features[i]);  
 	    		  } else {
-	    			  $ftree.tree( 'appendNode', { label: features[i] }, fds_node );  
+	    			  $ftree.tree( 'appendNode', { label: features[i] }, fds_node );
+	    			  appProfileChanged();
 	    		  }
 	    	  }
         	  
@@ -243,6 +229,116 @@ $(function() {
 	
 }); // jquery
 
+
+function checkFeatureWindowSize() {	
+	var window_size = $.trim($('#feature_window_size').val());
+	i_window_size = parseInt(window_size, 10);
+	//alert(i_window_size);
+	
+	if( $.isNumeric(window_size) == false || i_window_size <= 0 || i_window_size >3600) {
+		FlashAlert.show('Invalid feature window size. Valid range is 1-3600');
+		return false;		
+	}	
+	$('#feature_window_size').val(i_window_size);
+	return true;
+} 
+
+function checkFeatureList() {
+	var $t = $('#analyze_features_tree');    		  
+	root = $t.tree('getNodeById', 1);
+			  
+	if(root.children.length == 0) {
+		FlashAlert.show('Please select training data streams');
+		return false;
+	}
+	
+	var features_exist = false; 
+	for (var i=0; i < root.children.length; i++) {
+		repo = root.children[i];
+		for (var j=0; j < repo.children.length; j++) {
+			datastream = repo.children[i];			
+			if(datastream.children.length>0) {
+				features_exist = true;
+			}
+			//console.log(repo.name + " " + datastream.name)
+		}
+	}
+	
+	if(features_exist == false) {
+		FlashAlert.show('Please add some features');
+		return false;
+	}
+	
+	return true;
+}
+
+function checkGroundtruthList() {
+	  var $t = $('#aggregate_groundtruth_tree');    		  
+	  root = $t.tree('getNodeById', 1);
+	  
+	  //alert(root.children.length)
+	  if(root.children.length == 0) {
+		  FlashAlert.show('Select a ground truth data streams');
+		  return false;
+	  }	  
+	  return true;
+}
+
+function trainModel() {
+	
+	if(checkAggregateDateRange() == false) {
+		return;
+	}	
+	if(checkFeatureWindowSize() == false) {
+		return;
+	}
+	if(checkGroundtruthList() == false) {
+		return;
+	}
+	
+	if(checkFeatureList() == false) {
+		return;
+	}
+	if(!isAppSaved()) {
+		return;
+	}
+	
+	//check any features are addedd..
+	
+	
+	var classifier_name = $('#classifier_name').val();
+
+	//TODO: all the validations..
+	// and save the project..
+	msg = "Learning  model " + classifier_name + "... Please wait. This may take several minutes";
+	blockUImsg(msg);
+	
+	var appname = $.trim($("#current_app_name").text());
+	var parm = "appname="+appname;
+
+	$.ajax({
+        type: 'POST',              
+        url: '/train',
+		cache: false,
+        data: parm
+	})
+	.done( function (response) { 			
+        	if(response == "Success") {
+        		FlashAlert.show("Learnt modal " + classifier_name + " successfully!");
+        	} else {
+        		bootbox.alert("Error while learning modal " + classifier_name + ": " + response);
+        	}
+	})
+	.always(function() { 
+		$.unblockUI(); 
+	})
+	.fail(function(jqxhr, textStatus, error) { 
+		bootbox.alert( "Error occured : " + jqxhr.status + ", " + error + " Try again later!");
+	});
+
+	
+}
+
 function updateAnalyzeTable(service,datastream,feature) {
 	
 	var from_date = $('#aggregate_from_datepicker');
@@ -251,33 +347,20 @@ function updateAnalyzeTable(service,datastream,feature) {
 	
 	var from_date = $('#aggregate_from_datepicker');
 	var to_date = $('#aggregate_to_datepicker');
-
-	// TODO: validate the date range
-	
-	if(!from_date.val() || !to_date.val()) {
-		FlashAlert.show('Select valid aggregation date range to display the data points');
+		
+	if(checkAggregateDateRange() == false) {
 		return;
-	}
-	
-	var d1 = new Date(from_date.val());
-	var d2 = new Date(to_date.val());
-	
-	//alert(d1+d2);
-	
-	if(isNaN(d1.getTime()) || isNaN(d2.getTime())) {
-		FlashAlert.show('Select valid aggregation date range to display the data points');
-		return;
-	}
-	
-	
-	i_window_size = parseInt(window_size, 10);
-	//alert(i_window_size);
-	
-	if(isNaN(i_window_size) || i_window_size <= 0 || i_window_size >3600) {
-		FlashAlert.show('Invalid feature window size. Valid range is 1-3600');
-		return;		
 	}	
-	$('#feature_window_size').val(i_window_size);
+	
+	if(checkFeatureWindowSize() == false) {
+		return;
+	}
+
+	if(!isAppSaved()) {
+		return;
+	}
+
+	i_window_size = parseInt(window_size, 10);
 	
 	//$('#smwizard').smartWizard('showMessage',null);
 	//alert(from_date.val() + " " + to_date.val());

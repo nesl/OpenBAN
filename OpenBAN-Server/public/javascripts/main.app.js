@@ -26,6 +26,17 @@ function appProfileChanged() {
 	isAppProfileChanged = true;
 }
 
+function isAppSaved() {
+	var $cur_app = $("#current_app_name")
+	var appname = $.trim($cur_app.text());
+	
+	if(appname === "newapp" || isAppProfileChanged == true) {
+		FlashAlert.show("You changed the application configurations. Please save your app first!");
+		return false;
+	}
+	return true;
+}
+
 function parseApp(appObj) {
 	
 	if(appObj.appname) {
@@ -144,7 +155,7 @@ function saveApp(appname, isNewApp) {
 	    jsondata = JSON.stringify(appJsonObj); 
 	    //alert(jsondata);
 	    
-		msg = "Saving app... " + appname;
+		msg = "Please wait while saving your app... " + appname;
 		blockUImsg(msg);
 
 		$.ajax({

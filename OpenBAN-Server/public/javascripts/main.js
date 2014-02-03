@@ -27,7 +27,7 @@ $(function() {
 
  	// aggregate container
 	actLayout = $("#act_container").layout({ // DO NOT use "var pageLayout" here
-		west__size : .15,
+		west__size : .25,
 		east__size : .50,
 		south__initClosed : true,
 		north__initClosed : true,
@@ -92,14 +92,14 @@ $(function() {
 			var appname = $.trim($cur_app.text());
 			
 			if(appname === "newapp") {
-				bootbox.prompt("Enter App name? (max. length of 30)", function(result) {
+				bootbox.prompt("Enter App name? (2-30 chars in length and not 'newap')", function(result) {
 					var newname = $.trim(result);					
-					if(newname.length >= 1 && newname.length <= 30 ) {						
+					if(newname != "newapp" && newname.length >= 2 && newname.length <= 30 ) {						
 						//var ht = '<i class="glyphicon glyphicon-tasks"></i> ' + newname + ' <b class="caret"></b>';
 						//$cur_app.html(ht);
 						//alert(newname);
 						saveApp(newname,true); // its a new app
-					} else if(newname.length > 20){
+					} else {
 						FlashAlert.show("Invalid app name: "+ newname);
 					}
 				});				

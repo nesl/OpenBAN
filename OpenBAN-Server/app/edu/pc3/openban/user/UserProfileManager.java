@@ -56,6 +56,7 @@ public class UserProfileManager {
 	private String userId;
 	private static final String REPO_PROFILE = ":REPO_PROFILE"; 
 	private static final String APP_INFO = ":APP_INFO";
+	private static final String USERNAME = ":USERNAME";
 	
 	public UserProfileManager(String userId) {	
 		this.userId = userId;
@@ -64,22 +65,32 @@ public class UserProfileManager {
 	// load user profile from Dropbox
 	// fetch the list of data repositories
 	// fetch the list of datastreams	
-	public void loadProfile() {		
-		List<String> repos = new ArrayList<String>();		
+	public void loadProfile() throws Exception {
 		
+		System.out.println(userId + " Loading repolist.. ");
 		List<RepoProfile> repoProfiles = DropboxDataStore.getInstance(userId).getRepoList();
+		System.out.println(userId + " Loading applist.. ");
 		List<String> apps = DropboxDataStore.getInstance(userId).getAppList();
+		
+		System.out.println(userId + " Gettting user name.. ");
+		String username = DropboxDataStore.getInstance(userId).getDisplayName();
 		
 		String key1 = userId + REPO_PROFILE;
 		String key2 = userId + APP_INFO;
+		String key3 = userId + USERNAME;
 		
-		System.out.println("loadProfile apps " + apps);
+		//System.out.println("loadProfile apps " + apps);
 		
 		CacheManager.set(key1, repoProfiles);
 		CacheManager.set(key2, apps);
-		
+		CacheManager.set(key3, username);
 		//System.out.println("testing........................");
 		//List<RepoProfile> xx = (List<RepoProfile>)CacheManager.get(key1);
+	}
+	
+	public String getDisplayName() {
+		String key = userId + USERNAME;
+		return (String)CacheManager.get(key);
 	}
 
 	public RepoProfile getRepoProfile(String reponame) {
