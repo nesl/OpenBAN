@@ -272,10 +272,10 @@ public class DatastreamManager {
 		double preVal = 0;
 		for(DateTime keyTime : tsData.keySet()) {			
 			double val = (Double)tsData.get(keyTime).doubleValue();			
-			if(val >= 0 && val <= 1500) {
+			if(val >= 0 && val <= 5000) {
 				newData.put(keyTime, (Double)tsData.get(keyTime));	
 			} else {
-				if(preVal >= 0 && preVal <= 1500){
+				if(preVal >= 0 && preVal <= 5000){
 					newData.put(keyTime, new Double(preVal));
 				}	
 				else  {

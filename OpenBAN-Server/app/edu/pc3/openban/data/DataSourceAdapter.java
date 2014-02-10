@@ -81,8 +81,8 @@ public class DataSourceAdapter {
 		params.put("start", sdate);
 		params.put("end", edate);
 		
-		String options = "&timezone=-7&interval=60&function=average";
-		//String options = "&timezone=-7&interval=0";
+		//String options = "&timezone=-7&interval=30&function=average";
+		String options = "&timezone=-7&interval=0";
 		params.put("options", options);
 		
 		System.out.println(params.toString());
