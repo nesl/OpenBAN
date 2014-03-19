@@ -43,8 +43,15 @@ package edu.pc3.openban.analyze;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
+
+import org.apache.commons.lang.ArrayUtils;
+
+import controllers.ModelRepo;
 
 import play.libs.WS;
 import play.libs.WS.HttpResponse;
@@ -65,38 +72,36 @@ public class ProcessService {
 		}
 		return instance;
 	}
-	
-	
-	public String learnModalOpenPy(String classifier, String jsonData) throws Exception {
+
+	public String learnModalOpenPy(String classifier, String jsonData)
+			throws Exception {
 
 		String baseUrl = "http://127.0.0.1:8080";
 		String trainUrl = baseUrl + "/openban/svr/train/";
-		//String trainUrl = baseUrl + "/R/pub/openban/svm.train/save";
-		//String testUrl = baseUrl + "/R/pub/openban/svm.test/json";
+		// String trainUrl = baseUrl + "/R/pub/openban/svm.train/save";
+		// String testUrl = baseUrl + "/R/pub/openban/svm.test/json";
 
-		//String jsonStr = JsonUtil.json.toJson(jsonData);
+		// String jsonStr = JsonUtil.json.toJson(jsonData);
 		String jsonStr = jsonData;
 
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("data", jsonStr);
-		
+
 		System.out.println(jsonStr);
 
 		System.out.println("\n\nInvoking training " + trainUrl);
 
 		WSRequest wsr = WS.url(trainUrl).params(param).timeout("10min");
-		
-		
-		//System.out.println("time out.,.." + wsr.timeout);
+
+		// System.out.println("time out.,.." + wsr.timeout);
 
 		HttpResponse trainRes = wsr.post();
 
 		String resStr = trainRes.getString();
 		System.out.println(resStr);
-		
-		
+
 		File file = new File("response.html");
-		 
+
 		// if file doesnt exists, then create it
 		if (!file.exists()) {
 			file.createNewFile();
@@ -106,35 +111,35 @@ public class ProcessService {
 		BufferedWriter bw = new BufferedWriter(fw);
 		bw.write(resStr);
 		bw.close();
-				
 
 		OpenCPU_Response ocRes = JsonUtil.fromJson(resStr,
 				OpenCPU_Response.class);
-		
-		System.out.println("training ...done...");		
-		return ocRes.object; 
+
+		System.out.println("training ...done...");
+		return ocRes.object;
 	}
 
-	public String executeModalOpenPy(String classifier, String modalId, String jsonData) throws Exception {
+	public String executeModalOpenPy(String classifier, String modalId,
+			String jsonData) throws Exception {
 
 		String baseUrl = "http://127.0.0.1:8080";
 		String testUrl = baseUrl + "/openban/svr/test/";
-		
-		//String jsonStr = JsonUtil.json.toJson(jsonData);
-		String jsonStr = jsonData;
 
+		// String jsonStr = JsonUtil.json.toJson(jsonData);
+		String jsonStr = jsonData;
 
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("data", jsonStr);
 		param.put("model", modalId);
 
 		System.out.println("\n\nInvoking Testing " + testUrl);
-		HttpResponse testRes = WS.url(testUrl).params(param).timeout("10min").post();
+		HttpResponse testRes = WS.url(testUrl).params(param).timeout("10min")
+				.post();
 		String resStr = testRes.getString();
 		// System.out.println(resStr);
-		
+
 		File file = new File("test_response.html");
-		 
+
 		// if file doesnt exists, then create it
 		if (!file.exists()) {
 			file.createNewFile();
@@ -145,23 +150,56 @@ public class ProcessService {
 		bw.write(resStr);
 		bw.close();
 
-		
 		// writeTestData(resStr);
-		System.out.println("testing..... done...");		
-		return resStr; 
+		System.out.println("testing..... done...");
+		return resStr;
 	}
 
+	public String parseOpenCPUOutput(String output) {
 
-	public String learnModal(String classifier, String jsonData) throws Exception {
-		
-		if(classifier.equals(Const.SVR)) {
+		String obj = "";
+		StringTokenizer st = new StringTokenizer(output, "/");
+		st.nextToken();
+		st.nextToken();
+		obj = st.nextToken();
+
+		return obj;
+	}
+
+	// parse the computing engine output for leanring and return the obj id
+	public String handleTrainingOutput(String output, String server) {
+
+		String obj = "";
+		if (server.equalsIgnoreCase("OpenCPU")) {
+			StringTokenizer st = new StringTokenizer(output, "/");
+			st.nextToken();
+			st.nextToken();
+			obj = st.nextToken();
+		}
+		return obj;
+	}
+
+	public String learnModal(String classifier, String jsonData)
+			throws Exception {
+
+		if (classifier.equals(Const.SVR)) {
 			return learnModalOpenPy(classifier, jsonData);
 		}
 
-		String baseUrl = "http://128.97.93.32";
-		String trainUrl = baseUrl + "/R/pub/openban/"+ classifier + ".train/save";
-		//String trainUrl = baseUrl + "/R/pub/openban/svm.train/save";
-		//String testUrl = baseUrl + "/R/pub/openban/svm.test/json";
+		String trainUrl = null;
+		ModelRepo.AlgorithmInfo algo = null;
+		if (ModelRepo.alogrithms.containsKey(classifier)) {
+			algo = ModelRepo.alogrithms.get(classifier);
+			trainUrl = algo.train_url;
+		} else {
+			return "Unknown algorithm: " + classifier;
+		}
+
+		// String baseUrl = "http://128.97.93.32";
+		// String trainUrl = baseUrl + "/R/pub/openban/"+ classifier +
+		// ".train/save";
+		// String trainUrl = baseUrl + "/R/pub/openban/svm.train/save";
+		// String testUrl = baseUrl + "/R/pub/openban/svm.test/json";
 
 		String jsonStr = JsonUtil.json.toJson(jsonData);
 
@@ -171,26 +209,26 @@ public class ProcessService {
 		System.out.println("\n\nInvoking training " + trainUrl);
 
 		WSRequest wsr = WS.url(trainUrl).params(param).timeout("10min");
-		
-		
-		//System.out.println("time out.,.." + wsr.timeout);
+
+		// System.out.println("time out.,.." + wsr.timeout);
 
 		HttpResponse trainRes = wsr.post();
 
 		String resStr = trainRes.getString();
 		System.out.println(resStr);
 
-		OpenCPU_Response ocRes = JsonUtil.fromJson(resStr,
-				OpenCPU_Response.class);
-		
-		System.out.println("training ...done...");		
-		return ocRes.object; 
+		String model_obj = handleTrainingOutput(resStr, algo.server);
+		// OpenCPU_Response ocRes = JsonUtil.fromJson(resStr,
+		// OpenCPU_Response.class);
+
+		// System.out.println("training ...done...");
+		return model_obj;
 	}
 
 	public String getModalPararm(String modalId) throws Exception {
-		
+
 		String baseUrl = "http://128.97.93.32";
-		String objectUrl = baseUrl + "/R/tmp/"+ modalId + "/encode";
+		String objectUrl = baseUrl + "/R/tmp/" + modalId + "/encode";
 
 		System.out.println("\n\nDownload modal params " + objectUrl);
 
@@ -198,28 +236,93 @@ public class ProcessService {
 		HttpResponse trainRes = wsr.get();
 
 		String resStr = trainRes.getString();
-	//	System.out.println(resStr);
+		// System.out.println(resStr);
 
 		System.out.println("extracting modal params ...done...");
-		
-		return resStr; 
+
+		return resStr;
 	}
 
+	public static class ResultFormat {
+		// public double GROUNDTRUTH[];
+		public double predicted[];
 
-	
-	public String executeModal(String classifier, String modalId, String jsonData) throws Exception {
+	}
+
+	// parse the computing engine output for leanring and return the obj id
+	public ResultFormat handleExecutionOutput(String output, String server) {
+
+		ResultFormat rf = new ResultFormat();
+
+		List<Double> dataList = new ArrayList<Double>();
+		String obj = "";
+		if (server.equalsIgnoreCase("OpenCPU")) {
+			StringTokenizer st = new StringTokenizer(output);
+			// skip the header
+			st.nextToken();
+			while (st.hasMoreTokens()) {
+				dataList.add(new Double(Double.parseDouble(st.nextToken())));
+			}
+			Double[] ds = dataList.toArray(new Double[dataList.size()]);
+			rf.predicted = ArrayUtils.toPrimitive(ds);
+		} else {
+			// TODO:
+		}
+		return rf;
+	}
+
+	public String getOpenCPUObjectValue(String url, String objId) throws Exception {
 		
-		if(classifier.equals(Const.SVR)) {
-			return executeModalOpenPy(classifier, modalId, jsonData);
+		String baseUrl = "http://openban.iiitd.edu.in/ocpu/tmp/";
+		String objectUrl = baseUrl + objId + "/R/.val/csv";
+
+		System.out.println("\n\nDownload modal params " + objectUrl);
+
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put("Content-type", "text/csv");
+		
+		WSRequest wsr = WS.url(objectUrl).headers(headers).timeout("10min");
+		HttpResponse trainRes = wsr.get();
+
+		String resStr = trainRes.getString();
+		// System.out.println(resStr);
+
+		return resStr;
+		//System.out.println("extracting modal params ...done...");
+	}
+	
+	public ResultFormat executeModal(String classifier, String modalId,
+			String jsonData) throws Exception {
+
+		if (classifier.equals(Const.SVR)) {
+			// return executeModalOpenPy(classifier, modalId, jsonData);
 		}
 
-		String baseUrl = "http://128.97.93.32";
-		String testUrl = baseUrl + "/R/pub/openban/"+ classifier + ".test/json";
+		String execUrl = null;
+		ModelRepo.AlgorithmInfo algo = null;
+		if (ModelRepo.alogrithms.containsKey(classifier)) {
+			algo = ModelRepo.alogrithms.get(classifier);
+			execUrl = algo.exec_url;
+		} else {
+			// return "Unknown algorithm: " + classifier;
+		}
+		
+		
+		 if(execUrl.endsWith("/")) { 
+			execUrl = execUrl + "R/.val/csv"; 
+		} else { 
+			execUrl = execUrl + "/R/.val/csv"; 
+		}
+		 
+
+		// String baseUrl = "http://128.97.93.32";
+		// String testUrl = baseUrl + "/R/pub/openban/"+ classifier +
+		// ".test/json";
 
 		String jsonStr = JsonUtil.json.toJson(jsonData);
-		
+
 		File file = new File("execute_data.json");
-		 
+
 		// if file doesnt exists, then create it
 		if (!file.exists()) {
 			file.createNewFile();
@@ -230,20 +333,27 @@ public class ProcessService {
 		bw.write(jsonStr);
 		bw.close();
 
-		
-
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("data", jsonStr);
 		param.put("model", modalId);
-
-		System.out.println("\n\nInvoking Testing " + testUrl);
-		HttpResponse testRes = WS.url(testUrl).params(param).timeout("10min").post();
+		
+		System.out.println("\n\nInvoking execution " + execUrl);
+		
+		HttpResponse testRes = WS.url(execUrl).params(param).timeout("10min")
+				.post();
+		
 		String resStr = testRes.getString();
 		System.out.println(resStr);
 
+		String obj = parseOpenCPUOutput(resStr);
+		
+		String data = getOpenCPUObjectValue(algo.exec_url, obj);
+		
 		// writeTestData(resStr);
-		System.out.println("testing..... done...");		
-		return resStr; 
+		System.out.println("testing..... done...");
+
+		return handleExecutionOutput(data, algo.server);
+		// return resStr;
 	}
 
 	public static class OpenCPU_Response {

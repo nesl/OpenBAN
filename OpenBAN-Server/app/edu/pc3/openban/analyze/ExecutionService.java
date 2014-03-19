@@ -51,6 +51,7 @@ import org.joda.time.DateTime;
 
 import controllers.AppManager;
 import controllers.RepoProfile;
+import edu.pc3.openban.analyze.ProcessService.ResultFormat;
 import edu.pc3.openban.data.DataSourceAdapter;
 import edu.pc3.openban.data.DatastreamManager;
 import edu.pc3.openban.data.DatastreamManager.TimeSeriesContainer;
@@ -178,11 +179,7 @@ public class ExecutionService {
 	}
 	
 	
-	public static class ResultFormat {	
-		//public double GROUNDTRUTH[];
-		public double predicted[];
-		
-	}
+	
 	
 	public String executeModal() {
 		
@@ -236,15 +233,18 @@ public class ExecutionService {
 		System.out.println("execution set size : " + executionSet.keySet().size());
 		
 		// get the stored model id.
-		String classifier = toRFunction(app.analyze.classifier);
+		//String classifier = toRFunction(app.analyze.classifier);
+		String classifier = app.analyze.classifier;
 		
 		String result="";
+		//ResultFormat rf;
+		
 		ResultFormat rf;
 		
 		try {
-			result = ProcessService.getInstance().executeModal(classifier, modelId, jsonData);
+			rf = ProcessService.getInstance().executeModal(classifier, modelId, jsonData);
 			//result = ProcessService.getInstance().executeModalOpenPy(classifier, modelId, jsonData);
-			rf = JsonUtil.fromJson(result, ResultFormat.class);
+			//rf = JsonUtil.fromJson(result, ResultFormat.class);
 			
 			TimeSeries dataMap = null;
 			// get a single time series
@@ -443,12 +443,15 @@ public class ExecutionService {
 		String jsonData = JsonUtil.json.toJson(executionSet);
 		
 		
+		ResultFormat rf;
+
+		
 		// get the stored model id.
 		String classifier = toRFunction(app.analyze.classifier);
 		
 		try {
-			String result = ProcessService.getInstance().executeModal(classifier, modelId, jsonData);			
-			ResultFormat rf = JsonUtil.fromJson(result, ResultFormat.class);
+			rf = ProcessService.getInstance().executeModal(classifier, modelId, jsonData);			
+			//ResultFormat rf = JsonUtil.fromJson(result, ResultFormat.class);
 			
 			TimeSeries dataMap = null;
 			// get a single time series
@@ -482,7 +485,7 @@ public class ExecutionService {
 			String execute_now = "execute_now";
 			// update the cache
 			DatastreamManager.updateExecutionNowResult(userId, appname, execute_now, new TimeSeries(tsContainer.datapoints));
-			result = JsonUtil.json.toJson(tsContainer);
+			String result = JsonUtil.json.toJson(tsContainer);
 			DatastreamManager.storeExecutionOutputDropbox(userId, appname, execute_now, result);
 			
 		} catch (Exception e) {

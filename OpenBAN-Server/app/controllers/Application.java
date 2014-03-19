@@ -75,13 +75,22 @@ public class Application extends Controller {
 	static {
 		CacheManager.init();
 		
-		classifiers.add(Const.DECISION_TREE);
-		classifiers.add(Const.REGRESSION);
-		classifiers.add(Const.NEURAL_NETWORK);
-		classifiers.add(Const.SVM);
-		classifiers.add(Const.KNN);
-		classifiers.add(Const.NAIVE_BAYES);
-		classifiers.add(Const.SVR);
+		try {
+			//ModelRepo.storeModelInfo();	
+			ModelRepo.loadModelInfo();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		classifiers.addAll(ModelRepo.alogrithms.keySet());
+		
+		//classifiers.add(Const.DECISION_TREE);
+		//classifiers.add(Const.REGRESSION);
+		//classifiers.add(Const.NEURAL_NETWORK);
+		//classifiers.add(Const.SVM);
+		//classifiers.add(Const.KNN);
+		//classifiers.add(Const.NAIVE_BAYES);
+		//classifiers.add(Const.SVR);
 	}
 	
 	@Before(unless = {"index", "signin", "signout", "help", "test"})
@@ -431,7 +440,8 @@ public class Application extends Controller {
 		renderArgs.put("userid", userId);
 		renderArgs.put("username", new UserProfileManager(userId).getDisplayName());
 		
-		renderArgs.put("classifiers", classifiers);
+		// 
+		renderArgs.put("classifiers", ModelRepo.alogrithms.keySet());
 		
 		//renderArgs.put("token", token);		
 		render();

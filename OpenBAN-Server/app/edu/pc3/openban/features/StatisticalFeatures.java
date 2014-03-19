@@ -147,7 +147,7 @@ public class StatisticalFeatures {
 		// calculate median
 		double []sorted = statsCalc.getSortedValues();
 		int mid = (int)statsCalc.getN()/2;		
-		tsMean.put(time, sorted[mid]);
+		tsMedian.put(time, sorted[mid]);
 		
 		tsMean.put(time, statsCalc.getMean());
 		tsGeometricMean.put(time, statsCalc.getGeometricMean());

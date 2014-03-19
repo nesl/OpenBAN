@@ -1,0 +1,12 @@
+{
+  "Decision Tree": {
+    "server": "OpenCPU",
+    "train_url": "http://openban.iiitd.edu.in/ocpu/library/openban/R/dtree.train/",
+    "exec_url": "http://openban.iiitd.edu.in/ocpu/library/openban/R/dtree.test/"
+  },
+  "SVM": {
+    "server": "OpenCPU",
+    "train_url": "http://openban.iiitd.edu.in/ocpu/library/openban/R/svm.train/",
+    "exec_url": "http://openban.iiitd.edu.in/ocpu/library/openban/R/svm.test/"
+  }
+}

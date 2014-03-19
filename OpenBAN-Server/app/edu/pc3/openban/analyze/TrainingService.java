@@ -323,8 +323,8 @@ public class TrainingService {
 		String trainingFile = userId + appname + " training.raw.json";
 		String gtFile = userId + appname + " gt.raw.json";
 		// save the feature map
-		DatastreamManager.storeTrainingDataIntoDropbox(userId, appname, trainingFile, trainingDataNew);
-		DatastreamManager.storeTrainingDataIntoDropbox(userId, appname, gtFile, groundTruthDataNew);
+		//DatastreamManager.storeTrainingDataIntoDropbox(userId, appname, trainingFile, trainingDataNew);
+		//DatastreamManager.storeTrainingDataIntoDropbox(userId, appname, gtFile, groundTruthDataNew);
 		
 		System.out.println("Handling missing data.........");
 		handleMissingData();
@@ -341,7 +341,8 @@ public class TrainingService {
 		
 		//System.out.println(jsonData);
 
-		String classifier = toRFunction(app.analyze.classifier);
+		//String classifier = toRFunction(app.analyze.classifier);
+		String classifier = app.analyze.classifier;
 		
 		try {
 			String modalId = ProcessService.getInstance().learnModal(classifier, jsonData);
