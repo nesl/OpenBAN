@@ -183,7 +183,7 @@ public class DatapointDowloader {
 				}
 				
 				DateTime lastPointTime = xdp[xdp.length - 1].at;
-				// System.out.println( lastPointTime.plusMillis(1));
+				System.out.println("Last timestamp found : " + lastPointTime.plusMillis(1));
 				
 				//lastPointTime = lastPointTime.toDateTime(DateTimeZone.forOffsetHours(-7));
 				start = lastPointTime.plusMillis(1);

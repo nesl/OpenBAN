@@ -393,6 +393,7 @@ function updateAggregateHighCharts(charttype) {
 	
 	//alert("updating charts...");
 	
+	//$('#container').highcharts('StockChart',
     $('#aggregate_container_plot').highcharts({
         data: {
             table: document.getElementById('aggregate_container_table')

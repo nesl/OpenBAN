@@ -299,19 +299,22 @@ public class DatastreamManager {
 		String cacheKey = getCacheKey(userId, appname, service, datastream, from, to);
 		String dataKey  = getDataKey(service, datastream, from, to);
 
+		RepoProfile repoProfile = new UserProfileManager(userId).getRepoProfile(service);
+		
 		System.out.println("Looking data at Cache:" + dataKey );
 		Object obj = CacheManager.get(cacheKey);
 		if (obj == null) {
 			
-			System.out.println("Looking data at Dropbox:" + dataKey );
-			tsData = retrieveData(userId, appname, dataKey, DataType.RAW);
-				
+			// check only for xively data
+			if(repoProfile!= null && repoProfile.getReposource().equals(Const.XIVELY)) {
+				System.out.println("Looking data at Dropbox:" + dataKey );
+				tsData = retrieveData(userId, appname, dataKey, DataType.RAW);				
+			}			
 			
 			// If not found in dropbox? Go and download from data repository
 			if(tsData == null) {
 				System.out.println("Downloading data from Repo:" + dataKey );
 				tsData = downloadDataFromRepo(userId, appname, service, datastream, from, to);
-
 				
 				if(tsData != null) {
 					
@@ -333,8 +336,11 @@ public class DatastreamManager {
 				if (tsData != null && tsData.entrySet().size() > 0) {
 					System.out.println("Downloaded #datapoitns " + tsData.entrySet().size());
 					
-					System.out.println("Storing data to Dropbox:" + dataKey );
-					storeRawData(userId, appname, dataKey, tsData, DataType.RAW);
+					// store only the xively data
+					if(repoProfile!= null && repoProfile.getReposource().equals(Const.XIVELY)) {
+						System.out.println("Storing data to Dropbox:" + dataKey );
+						storeRawData(userId, appname, dataKey, tsData, DataType.RAW);						
+					}
 				}
 			} 
 			
@@ -379,12 +385,17 @@ public class DatastreamManager {
 		String cacheKey = getFeatureCacheKey(userId, appname, service, datastream, from, to, feature, window_size);
 		String dataKey = getFeatureDataKey(service, datastream, from, to, feature, window_size);
 
+		RepoProfile repoProfile = new UserProfileManager(userId).getRepoProfile(service);
+
 		System.out.println("Looking data at Cache:" + dataKey );
 		Object obj = CacheManager.get(cacheKey);
 		if (obj == null) {
 			
-			System.out.println("Looking data at Dropbox:" + dataKey );
-			tsData = retrieveData(userId, appname, dataKey, DataType.FEATURE);
+			// check only for xively data
+			if(repoProfile!= null && repoProfile.getReposource().equals(Const.XIVELY)) {
+				System.out.println("Looking data at Dropbox:" + dataKey );
+				tsData = retrieveData(userId, appname, dataKey, DataType.FEATURE);
+			}			
 			
 			// If not found in dropbox? Go and download from data repository
 			if(tsData == null) {
@@ -401,8 +412,11 @@ public class DatastreamManager {
 				if (tsData != null && tsData.entrySet().size() > 0) {
 					System.out.println("Downloaded #datapoitns " + tsData.entrySet().size());
 					
-					System.out.println("Storing data to Dropbox:" + dataKey );
-					storeRawData(userId, appname, dataKey, tsData, DataType.FEATURE);
+					// store only the xively data
+					if(repoProfile!= null && repoProfile.getReposource().equals(Const.XIVELY)) {
+						System.out.println("Storing data to Dropbox:" + dataKey );
+						storeRawData(userId, appname, dataKey, tsData, DataType.FEATURE);						
+					}
 				}
 			} 
 			
