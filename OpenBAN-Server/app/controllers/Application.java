@@ -490,19 +490,19 @@ public class Application extends Controller {
 		renderText( res );
 	}
 	
-	public static void trainModal(String appname) {
+	public static void trainModel(String appname) {
 		
 		String userId = session.get(SESSION_KEY);		
 		// validate the appname and userid
-		String res = new TrainingService(userId, appname).trainModal();
+		String res = new TrainingService(userId, appname).trainModel();
 		renderText(res);
 	}
 
-	public static void executeModal(String appname) {
+	public static void executeModel(String appname) {
 		
 		String userId = session.get(SESSION_KEY);		
 		// validate the appname and userid
-		String res = new ExecutionService(userId, appname).executeModal();
+		String res = new ExecutionService(userId, appname).executeModel();
 		renderText(res);
 	}
 

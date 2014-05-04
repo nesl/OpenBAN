@@ -73,7 +73,7 @@ public class ProcessService {
 		return instance;
 	}
 
-	public String learnModalOpenPy(String classifier, String jsonData)
+	public String learnModelOpenPy(String classifier, String jsonData)
 			throws Exception {
 
 		String baseUrl = "http://127.0.0.1:8080";
@@ -119,7 +119,7 @@ public class ProcessService {
 		return ocRes.object;
 	}
 
-	public String executeModalOpenPy(String classifier, String modalId,
+	public String executeModelOpenPy(String classifier, String ModelId,
 			String jsonData) throws Exception {
 
 		String baseUrl = "http://127.0.0.1:8080";
@@ -130,7 +130,7 @@ public class ProcessService {
 
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("data", jsonStr);
-		param.put("model", modalId);
+		param.put("model", ModelId);
 
 		System.out.println("\n\nInvoking Testing " + testUrl);
 		HttpResponse testRes = WS.url(testUrl).params(param).timeout("10min")
@@ -179,11 +179,11 @@ public class ProcessService {
 		return obj;
 	}
 
-	public String learnModal(String classifier, String jsonData)
+	public String learnModel(String classifier, String jsonData)
 			throws Exception {
 
 		if (classifier.equals(Const.SVR)) {
-			return learnModalOpenPy(classifier, jsonData);
+			return learnModelOpenPy(classifier, jsonData);
 		}
 
 		String trainUrl = null;
@@ -225,12 +225,12 @@ public class ProcessService {
 		return model_obj;
 	}
 
-	public String getModalPararm(String modalId) throws Exception {
+	public String getModelPararm(String ModelId) throws Exception {
 
 		String baseUrl = "http://128.97.93.32";
-		String objectUrl = baseUrl + "/R/tmp/" + modalId + "/encode";
+		String objectUrl = baseUrl + "/R/tmp/" + ModelId + "/encode";
 
-		System.out.println("\n\nDownload modal params " + objectUrl);
+		System.out.println("\n\nDownload Model params " + objectUrl);
 
 		WSRequest wsr = WS.url(objectUrl).timeout("10min");
 		HttpResponse trainRes = wsr.get();
@@ -238,7 +238,7 @@ public class ProcessService {
 		String resStr = trainRes.getString();
 		// System.out.println(resStr);
 
-		System.out.println("extracting modal params ...done...");
+		System.out.println("extracting Model params ...done...");
 
 		return resStr;
 	}
@@ -276,7 +276,7 @@ public class ProcessService {
 		String baseUrl = "http://openban.iiitd.edu.in/ocpu/tmp/";
 		String objectUrl = baseUrl + objId + "/R/.val/csv";
 
-		System.out.println("\n\nDownload modal params " + objectUrl);
+		System.out.println("\n\nDownload Model params " + objectUrl);
 
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put("Content-type", "text/csv");
@@ -288,14 +288,14 @@ public class ProcessService {
 		// System.out.println(resStr);
 
 		return resStr;
-		//System.out.println("extracting modal params ...done...");
+		//System.out.println("extracting Model params ...done...");
 	}
 	
-	public ResultFormat executeModal(String classifier, String modalId,
+	public ResultFormat executeModel(String classifier, String ModelId,
 			String jsonData) throws Exception {
 
 		if (classifier.equals(Const.SVR)) {
-			// return executeModalOpenPy(classifier, modalId, jsonData);
+			// return executeModelOpenPy(classifier, ModelId, jsonData);
 		}
 
 		String execUrl = null;
@@ -335,7 +335,7 @@ public class ProcessService {
 
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("data", jsonStr);
-		param.put("model", modalId);
+		param.put("model", ModelId);
 		
 		System.out.println("\n\nInvoking execution " + execUrl);
 		

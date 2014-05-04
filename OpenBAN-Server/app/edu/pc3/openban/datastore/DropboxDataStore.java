@@ -74,7 +74,7 @@ public class DropboxDataStore {
 	// store different files
 	public static enum DataType {
 
-		RAW("raw"), MODAL("model"), FEATURE("feature"), TRAINING("training"), EXECUTION(
+		RAW("raw"), Model("model"), FEATURE("feature"), TRAINING("training"), EXECUTION(
 				"execution");
 
 		private DataType(final String text) {
@@ -346,7 +346,7 @@ public class DropboxDataStore {
 		return "Success";
 	}
 
-	public String getModalInfo(String appName, String filename,
+	public String getModelInfo(String appName, String filename,
 			DataType dataType) {
 
 		String folderPath = APPS_DIR + "/" + appName;

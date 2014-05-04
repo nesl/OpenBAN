@@ -18,8 +18,8 @@ POST    /app/save                               Application.saveApp
 GET     /feature/list                           Application.featureList
 POST    /feature/test                           Application.featureTest
 
-POST    /train                                  Application.trainModal
-POST    /execute                                Application.executeModal
+POST    /train                                  Application.trainModel
+POST    /execute                                Application.executeModel
 POST    /app/schedule                           Application.scheduleApp
 
 GET     /data                                   Application.getData

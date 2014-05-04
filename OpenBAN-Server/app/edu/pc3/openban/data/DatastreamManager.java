@@ -220,16 +220,16 @@ public class DatastreamManager {
 		//DropboxDataStore.getInstance(userId).storeAppData(appname, dataKey, csv, DataType.EXECUTION);
 	}
 
-	public static void storeModalInfo(String userId, String appname, String dataKey, 
+	public static void storeModelInfo(String userId, String appname, String dataKey, 
 			String data) {	
 		System.out.println("Storing to dbx " + dataKey);		
 		//out.datapoints = data;
 		//String jsonData = JsonUtil.json1.toJson(out);
-		DropboxDataStore.getInstance(userId).storeAppData(appname, dataKey, data, DataType.MODAL);
+		DropboxDataStore.getInstance(userId).storeAppData(appname, dataKey, data, DataType.Model);
 	}
 
-	public static String getModalInfo(String userId, String appname, String classifier) {
-		return DropboxDataStore.getInstance(userId).getModalInfo(appname, classifier, DataType.MODAL);
+	public static String getModelInfo(String userId, String appname, String classifier) {
+		return DropboxDataStore.getInstance(userId).getModelInfo(appname, classifier, DataType.Model);
 	}
 
 	public static void storeExecutionOutputDropbox(String userId, String appname, String dataKey, 

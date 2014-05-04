@@ -181,7 +181,7 @@ public class ExecutionService {
 	
 	
 	
-	public String executeModal() {
+	public String executeModel() {
 		
 		//app = AppManager.loadApp(userId, appname);
 		
@@ -206,15 +206,15 @@ public class ExecutionService {
 		}
 
 		System.out.println("Getting model info...");
-		String modelId = DatastreamManager.getModalInfo(userId, appname, app.analyze.classifier);		
-		System.out.println("modalId : " + modelId);
+		String modelId = DatastreamManager.getModelInfo(userId, appname, app.analyze.classifier);		
+		System.out.println("ModelId : " + modelId);
 		
 		if(modelId == null) {
 			return "No model found!";
 		}
 		
 		modelId = modelId.replace(app.analyze.classifier, "").replace("--", "");
-		System.out.println("modalId : " + modelId);
+		System.out.println("ModelId : " + modelId);
 
 		
 		// save the feature map
@@ -242,8 +242,8 @@ public class ExecutionService {
 		ResultFormat rf;
 		
 		try {
-			rf = ProcessService.getInstance().executeModal(classifier, modelId, jsonData);
-			//result = ProcessService.getInstance().executeModalOpenPy(classifier, modelId, jsonData);
+			rf = ProcessService.getInstance().executeModel(classifier, modelId, jsonData);
+			//result = ProcessService.getInstance().executeModelOpenPy(classifier, modelId, jsonData);
 			//rf = JsonUtil.fromJson(result, ResultFormat.class);
 			
 			TimeSeries dataMap = null;
@@ -419,15 +419,15 @@ public class ExecutionService {
 		}
 
 		System.out.println("Getting model info...");
-		String modelId = DatastreamManager.getModalInfo(userId, appname, app.analyze.classifier);		
-		System.out.println("modalId : " + modelId);
+		String modelId = DatastreamManager.getModelInfo(userId, appname, app.analyze.classifier);		
+		System.out.println("ModelId : " + modelId);
 		
 		if(modelId == null) {
 			return "No model found!";
 		}
 		
 		modelId = modelId.replace(app.analyze.classifier, "").replace("--", "");
-		System.out.println("modalId : " + modelId);
+		System.out.println("ModelId : " + modelId);
 		
 		// save the feature map
 		//DatastreamManager.storeTrainingDataIntoDropbox(userId, appname, trainingFile, trainingDataNew);
@@ -450,7 +450,7 @@ public class ExecutionService {
 		String classifier = toRFunction(app.analyze.classifier);
 		
 		try {
-			rf = ProcessService.getInstance().executeModal(classifier, modelId, jsonData);			
+			rf = ProcessService.getInstance().executeModel(classifier, modelId, jsonData);			
 			//ResultFormat rf = JsonUtil.fromJson(result, ResultFormat.class);
 			
 			TimeSeries dataMap = null;

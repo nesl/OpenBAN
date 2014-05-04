@@ -297,7 +297,7 @@ public class TrainingService {
 		return Const.SUCCESS;
 	}
 	
-	public String trainModal() {
+	public String trainModel() {
 		
 		//app = AppManager.loadApp(userId, appname);
 		
@@ -345,10 +345,10 @@ public class TrainingService {
 		String classifier = app.analyze.classifier;
 		
 		try {
-			String modalId = ProcessService.getInstance().learnModal(classifier, jsonData);
-			String modalInfo = ""; //ProcessService.getInstance().getModalPararm(modalId);
-			String modalFile = app.analyze.classifier + "--" + modalId;			
-			DatastreamManager.storeModalInfo(userId, appname, modalFile, modalInfo);
+			String ModelId = ProcessService.getInstance().learnModel(classifier, jsonData);
+			String ModelInfo = ""; //ProcessService.getInstance().getModelPararm(ModelId);
+			String ModelFile = app.analyze.classifier + "--" + ModelId;			
+			DatastreamManager.storeModelInfo(userId, appname, ModelFile, ModelInfo);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
