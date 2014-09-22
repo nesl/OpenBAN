@@ -47,9 +47,13 @@ $( "#register-repo-dialog" ).dialog({
 		    bValid = bValid && checkLength( reponame, "Repo Name", 3, 16 );		    
 		    if(reposource == "SensorAct") {
 		    	bValid = bValid && checkLength( repourl, "Repo URL", 3, 16 );
-		    }		    
-		    bValid = bValid && checkLength( userId, "User Id", 3, 16 );
-		    bValid = bValid && checkLength( key, "key", 32, 48 );
+		    }
+		    
+		    // check the user id and key only for xively and sensoract
+		    if(reposource == "SensorAct" || reposource == "Xively") {
+		    	bValid = bValid && checkLength( userId, "User Id", 3, 16 );
+		    	bValid = bValid && checkLength( key, "key", 32, 48 );
+		    }
 		    
 		    if ( bValid ) {
 		    	progress.css("visibility", "inline");

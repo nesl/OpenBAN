@@ -124,8 +124,21 @@ function saveApp(appname, isNewApp) {
 		
   	  	var features_tree = $('#analyze_features_tree');
   	  	var act_consumer_tree = $('#act_consumer_tree');
-  	  
-		
+  	  	
+  	  	var model_options_str = $.trim($('#model_options').val());
+  	  	var model_options = "";
+  	  	
+  	  	try {
+  	  		t = "{" + model_options_str +"}"
+  	  		//alert(t);
+  	  		model_options = JSON.parse(t);
+  	  		//alert(JSON.stringify(model_options));
+  	  		model_options = model_options_str;
+  		} catch (e) {
+  			FlashAlert.show("Invalid model options.. It should be a valid Json string");
+  			return;
+  		}
+  				
 		var appJsonObj = new Object(); //declare object 
 	    var aggregateJsonObj = new Object(); //declare object
 	    var analyzeJsonObj = new Object(); //declare object
@@ -139,6 +152,7 @@ function saveApp(appname, isNewApp) {
 	    analyzeJsonObj.features = jQuery.parseJSON( features_tree.tree("toJson") );	    
 	    analyzeJsonObj.feature_window_size = feature_window_size;
 	    analyzeJsonObj.classifier = classifier_name;
+	    analyzeJsonObj.options = model_options
 
 	    actJsonObj.from_date = act_from_date;
 	    actJsonObj.to_date = act_to_date;

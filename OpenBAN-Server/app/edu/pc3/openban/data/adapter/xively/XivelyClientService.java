@@ -62,7 +62,7 @@ public class XivelyClientService extends PlayPlugin {
 		List<Feed> results = new ArrayList<Feed>(); 
 	}	
 	
-	public Map<String, List<String>> feedList(String key, String user) {		
+	public Map<String, List<String>> feedList(String key, String user) throws Exception {		
 		
 		String url = "https://api.xively.com/v2/feeds.json?user=" + user;		
 		String jsonResponse = null;
@@ -92,7 +92,8 @@ public class XivelyClientService extends PlayPlugin {
 			
 		} catch (Exception e) {
 			jsonResponse = e.getMessage();
-			e.printStackTrace();
+			//e.printStackTrace();
+			throw e;
 		}
 		
 		return feedList;

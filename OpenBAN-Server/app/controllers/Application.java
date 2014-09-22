@@ -405,7 +405,7 @@ public class Application extends Controller {
 				String analyze_features_tree = JsonUtil.toJson(app.analyze.features);				
 				renderArgs.put("analyze_features_tree", analyze_features_tree);				
 				renderArgs.put("classifier_name", app.analyze.classifier);
-				
+				renderArgs.put("model_options", app.analyze.options);
 
 				renderArgs.put("act_from_date", app.act.from_date);
 				renderArgs.put("act_to_date", app.act.to_date);

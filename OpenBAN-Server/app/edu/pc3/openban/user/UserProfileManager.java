@@ -195,7 +195,14 @@ public class UserProfileManager {
 	public String registerRepo(String reposource, String reponame, String repourl, String userid, String key) {
 		
 		System.out.println("fetching data stream list....");
-		Map<String, List<String>> datastreams = DataSourceAdapter.fetchDatastreamList(reposource, reponame, repourl, userid, key);
+		
+		Map<String, List<String>> datastreams = null;
+		
+		try {
+			datastreams = DataSourceAdapter.fetchDatastreamList(reposource, reponame, repourl, userid, key);			
+		} catch(Exception e) {
+			return e.getMessage();
+		}
 		
 		RepoProfile repoProfile = new RepoProfile(reposource, reponame, repourl, userid, key);
 		repoProfile.setDatastreams(datastreams);

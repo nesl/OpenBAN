@@ -48,12 +48,14 @@ import org.joda.time.DateTime;
 
 import edu.pc3.openban.data.adapter.sensoract.SensorActAdapter;
 import edu.pc3.openban.data.adapter.xively.XivelyClientService;
+import edu.pc3.openban.data.smap.SmapAdapter;
 import edu.pc3.openban.util.Const;
 
 public class DataSourceAdapter {
 	
 	
-	public static Map<String, List<String>> fetchDatastreamList(String reposource, String reponame, String repourl, String userid, String key) {
+	public static Map<String, List<String>> fetchDatastreamList(String reposource, 
+			String reponame, String repourl, String userid, String key) throws Exception {
 		
 		if(reposource.equals(Const.XIVELY)) {
 			return fetchXivelyDatastreamList(key, userid);
@@ -63,10 +65,14 @@ public class DataSourceAdapter {
 			return SensorActAdapter.channelList(repourl, key);
 		}
 
+		if(reposource.equals(Const.SMAP)) {
+			return SmapAdapter.channelList(repourl, key);
+		}
+
 		return null;
 	}
 	
-	private static Map<String, List<String>> fetchXivelyDatastreamList(String key, String username) {		
+	private static Map<String, List<String>> fetchXivelyDatastreamList(String key, String username) throws Exception {		
 		Map<String, List<String>> feedList = new XivelyClientService().feedList(key, username );		
 		return feedList;		
 		//return null;
@@ -110,5 +116,9 @@ public class DataSourceAdapter {
 		
 	}
 
-	
+	public static Map<DateTime, Double> fetchsMapData(String hosturl, String key, 
+			String device, String sensor, String channel, String sdate, String edate) {
+		return SmapAdapter.fetchData(hosturl, key, device, sensor, channel, sdate, edate);
+	}
+
 }

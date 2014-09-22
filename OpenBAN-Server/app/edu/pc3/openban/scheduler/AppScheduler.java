@@ -157,12 +157,31 @@ public class AppScheduler {
 		return false;
 	}
 	
-	public static String scheduleTasklet(final String userId, final String appname) {
+	public static String getCronExpression(String duration, String unit) {
+		
+		//"0 0/1 * * * ?"
+		
+		int dur = Integer.parseInt(duration);
+		
+		if(unit.equals("Minute")) {
+			return "0 0/" + dur +" * * * ?";
+		} else if(unit.equals("Hour")) {
+			return "0 0 0/" + dur +" * * ?";
+		} else if(unit.equals("Day")) {
+			return "0 0 0 0/" + dur +" * ?";
+		}
+		
+		return "0 0 0 0/1 * ?"; // default 1 day		
+	}
+	
+	public static String scheduleTasklet(final String userId, final String appname, 
+			final String duration, final String unit) {
 		
 		JobKey jobKey = new JobKey(appname, userId);
 		TriggerKey triggerKey = new TriggerKey(appname, userId);
 
 		if (checkTaskletExists(jobKey)) {
+			//cancelTasklet(jobKey.toString());
 			return "Already scheduled!";
 		}
 
@@ -181,9 +200,11 @@ public class AppScheduler {
 				// tasklet.tasklet_type.toString())
 				.usingJobData(jobDataMap).build();
 		
+		String cronExp = getCronExpression(duration, unit);
+		System.out.println("Cron expression : " + cronExp);
 		Trigger trigger = newTrigger()
 							.withIdentity(triggerKey)
-							.withSchedule(cronSchedule("0 0/1 * * * ?"))
+							.withSchedule(cronSchedule(cronExp))
 							.build();
 		
 		return scheduleTasklet(jobDetail, trigger) ? jobKey.toString() : null;

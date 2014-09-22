@@ -40,6 +40,7 @@
  */
 package edu.pc3.openban.analyze;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -106,6 +107,14 @@ public class ExecutionService {
 			dataMap = executionDataNew.get(tkey);			
 			executionSet.put(tkey, dataMap.values());
 		}
+		
+		// TODO: only for openpy nilm tk
+		// put timestamp (epoc) as well 
+		List<Double> ts = new ArrayList<Double>();		
+		for(DateTime dt: dataMap.keySet()) {
+			ts.add( new Double(dt.getMillis()));
+		}
+		executionSet.put("time", ts);
 	}
 
 	public void printSummary(Map<String, TimeSeries> map) {
@@ -140,16 +149,42 @@ public class ExecutionService {
 		String to_date = act.to_date;		
 		int feature_window_size = Integer.parseInt(analyze.feature_window_size);
 
-		// load ground truth data...
-		String gt_service = aggregate.groundtruth.get(0).children.get(0).name;
-		String gt_datastream = aggregate.groundtruth.get(0).children.get(0).children.get(0).name;
+		// load training feature data...		
+		Map<String, TimeSeries> tsFeatureMap = new LinkedHashMap<String, TimeSeries>();
 		
-		// TODO: Don't find mean for the ground truth data...
-		TimeSeries tsGroundTruth = DatastreamManager.getFeatureData(userId, appname, gt_service, 
-				gt_datastream, from_date, to_date, "Minimum", feature_window_size );
+		List<AppFormat.Node> dataRepoList   = analyze.features.get(0).children;		
+		for(AppFormat.Node dataRepo: dataRepoList){
+			
+			List<AppFormat.Node> datastreamList = safeList(dataRepo.children);
+			for(AppFormat.Node datastream: datastreamList){
+				List<AppFormat.Node> featureList   = safeList(datastream.children);
+				for(AppFormat.Node feature : featureList){
+					System.out.println("fetching feature " + dataRepo.name + "  " + datastream.name + "  " + feature.name);					
+					TimeSeries tt = DatastreamManager.getFeatureData(userId, appname, dataRepo.name, 
+							datastream.name, from_date, to_date, feature.name, feature_window_size );
+					
+					String feature_name = DatastreamManager.getFeatureDataKey(dataRepo.name, 
+							datastream.name, from_date, to_date, feature.name, feature_window_size );
+					
+					tsFeatureMap.put(feature.name, tt);
+					//tsFeatureMap.put(feature_name, tt);
+				}
+			}
+		}		
+		executionDataNew.putAll(tsFeatureMap);
 		
-		System.out.println("tsGroundTruth# " + tsGroundTruth.size());
-		groundTruthDataNew.put("GROUNDTRUTH", tsGroundTruth);
+		return Const.SUCCESS;
+	}
+
+	public String acquireDataForSchedule(String from_date, String to_date) {
+		
+		AppFormat.Aggregate aggregate = app.aggregate;
+		AppFormat.Analyze analyze = app.analyze;
+		AppFormat.Act act = app.act;
+		
+		//String from_date = act.from_date;
+		//String to_date = act.to_date;		
+		int feature_window_size = Integer.parseInt(analyze.feature_window_size);
 
 		// load training feature data...		
 		Map<String, TimeSeries> tsFeatureMap = new LinkedHashMap<String, TimeSeries>();
@@ -177,8 +212,6 @@ public class ExecutionService {
 		
 		return Const.SUCCESS;
 	}
-	
-	
 	
 	
 	public String executeModel() {
@@ -209,13 +242,18 @@ public class ExecutionService {
 		String modelId = DatastreamManager.getModelInfo(userId, appname, app.analyze.classifier);		
 		System.out.println("ModelId : " + modelId);
 		
+		
+		// 
 		if(modelId == null) {
-			return "No model found!";
+			modelId = "0" ; // for unsupervised model
+			//return "No model found!";
 		}
 		
-		modelId = modelId.replace(app.analyze.classifier, "").replace("--", "");
+		if(modelId != null) {
+			modelId = modelId.replace(app.analyze.classifier, "").replace("--", "");	
+		}
+		
 		System.out.println("ModelId : " + modelId);
-
 		
 		// save the feature map
 		//DatastreamManager.storeTrainingDataIntoDropbox(userId, appname, trainingFile, trainingDataNew);
@@ -231,6 +269,7 @@ public class ExecutionService {
 		String jsonData = JsonUtil.json.toJson(executionSet);
 		
 		System.out.println("execution set size : " + executionSet.keySet().size());
+		System.out.println(jsonData);
 		
 		// get the stored model id.
 		//String classifier = toRFunction(app.analyze.classifier);
@@ -242,7 +281,9 @@ public class ExecutionService {
 		ResultFormat rf;
 		
 		try {
-			rf = ProcessService.getInstance().executeModel(classifier, modelId, jsonData);
+			
+			String options = "{" + app.analyze.options + "}";
+			rf = ProcessService.getInstance().executeModel(classifier, modelId, jsonData, options);
 			//result = ProcessService.getInstance().executeModelOpenPy(classifier, modelId, jsonData);
 			//rf = JsonUtil.fromJson(result, ResultFormat.class);
 			
@@ -271,6 +312,7 @@ public class ExecutionService {
 			}
 						
 			// for the experiments...
+			/*
 			TimeSeries gtMap = null;
 			for (String key : groundTruthDataNew.keySet()) {
 				gtMap = groundTruthDataNew.get(key);
@@ -281,9 +323,10 @@ public class ExecutionService {
 				gtMap.keySet().retainAll(dataMap.keySet());				
 			}
 			executionSet.put("GT", gtMap.values());
-			executionSet.put("result", tsContainer.datapoints.values());
-			
+			executionSet.put("result", tsContainer.datapoints.values());			
 			DatastreamManager.storeExecutionSetIntoDropbox(userId, appname, "experiment_set", executionSet);		
+			*/
+			
 			
 			String execute_now = "execute_now";
 			// update the cache
@@ -384,7 +427,11 @@ public class ExecutionService {
 	
 	public void handleConsumers(Map<DateTime, Double> tsData) {
 		
+		System.out.println("Handling consumers...");
 		List<AppFormat.Node> dataConsumerList   = app.act.consumers.get(0).children;		
+		if(dataConsumerList == null)
+			return;
+		
 		for(AppFormat.Node dataRepo: dataConsumerList){
 			List<AppFormat.Node> datastreamList = safeList(dataRepo.children);
 			for(AppFormat.Node datastream: datastreamList){
@@ -394,6 +441,22 @@ public class ExecutionService {
 		}					
 	}
 
+	// duration: 5 and unit: Minutes
+	int getDuration(String duration, String unit) {
+
+		int seconds = Integer.parseInt(duration);
+		
+		// ignore for Second
+		if(unit.equals("Minute")) {
+			seconds = seconds * 60;
+		} else if(unit.equals("Hour")) {
+			seconds = seconds * 60 * 60;
+		} else if(unit.equals("Day")) {
+			seconds = seconds * 60 * 60 * 24;
+		}		
+		return seconds;
+	}
+	
 	public String executeAppInstance() {
 		
 		//app = AppManager.loadApp(userId, appname);
@@ -413,7 +476,15 @@ public class ExecutionService {
 			return res;
 		}
 		
-		res = acquireData();
+		int dur = getDuration(app.act.time_duration, app.act.time_unit);
+		// make start and end time stamp
+		DateTime end = new DateTime();
+		DateTime start = end.minusSeconds(dur).plusMillis(1);
+		
+		System.out.println("Schedule start : " + start.toString());
+		System.out.println("Schedule   end : " + end.toString());
+		
+		res = acquireDataForSchedule(start.toString(), end.toString());
 		if(!res.contains(Const.SUCCESS)){
 			return res;
 		}
@@ -423,10 +494,13 @@ public class ExecutionService {
 		System.out.println("ModelId : " + modelId);
 		
 		if(modelId == null) {
-			return "No model found!";
+			modelId = "0" ; // for unsupervised model
+			//return "No model found!";
 		}
 		
-		modelId = modelId.replace(app.analyze.classifier, "").replace("--", "");
+		if(modelId != null) {
+			modelId = modelId.replace(app.analyze.classifier, "").replace("--", "");	
+		}
 		System.out.println("ModelId : " + modelId);
 		
 		// save the feature map
@@ -450,7 +524,9 @@ public class ExecutionService {
 		String classifier = toRFunction(app.analyze.classifier);
 		
 		try {
-			rf = ProcessService.getInstance().executeModel(classifier, modelId, jsonData);			
+			String options = "{" + app.analyze.options + "}";
+
+			rf = ProcessService.getInstance().executeModel(classifier, modelId, jsonData, options);			
 			//ResultFormat rf = JsonUtil.fromJson(result, ResultFormat.class);
 			
 			TimeSeries dataMap = null;
@@ -471,7 +547,7 @@ public class ExecutionService {
 			
 			Map<DateTime, Double> tsFiltered = new LinkedHashMap<DateTime, Double> ();
 
-			double threshold = 0.6;
+			double threshold = -0.6;
 			index = 0;
 			for (DateTime dt : dataMap.keySet()) {				
 				if(rf.predicted[index] > threshold) {
@@ -480,7 +556,7 @@ public class ExecutionService {
 				++index;
 			}
 			
-			handleConsumers(tsFiltered);
+			handleConsumers(tsContainer.datapoints);
 			
 			String execute_now = "execute_now";
 			// update the cache
@@ -519,7 +595,7 @@ public class ExecutionService {
 		}
 		
 		try {			
-			String jobId = AppScheduler.scheduleTasklet(userId, appname);
+			String jobId = AppScheduler.scheduleTasklet(userId, appname, app.act.time_duration, app.act.time_unit);
 			System.out.println("Job scheduled " + jobId);
 			if( jobId == null ) {
 				return "Error occured while schedulting the job";

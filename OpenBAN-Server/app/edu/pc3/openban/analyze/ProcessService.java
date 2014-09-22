@@ -119,24 +119,28 @@ public class ProcessService {
 		return ocRes.object;
 	}
 
-	public String executeModelOpenPy(String classifier, String ModelId,
-			String jsonData) throws Exception {
+	public String executeModelOpenPy(String execUrl, String ModelId, String jsonData, String options) throws Exception {
 
-		String baseUrl = "http://127.0.0.1:8080";
-		String testUrl = baseUrl + "/openban/svr/test/";
+		//String baseUrl = "http://127.0.0.1:8080";
+		//String testUrl = baseUrl + "/openban/svr/test/";
 
 		// String jsonStr = JsonUtil.json.toJson(jsonData);
 		String jsonStr = jsonData;
 
+		Map<String, String> header = new HashMap<String, String>();
+		header.put("apikey", "ec1b7134-9646-4c95-830f-7b4f0e3f7be6");
+		header.put("Content-Type", "application/x-www-form-urlencoded");
+		
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("data", jsonStr);
 		param.put("model", ModelId);
-
-		System.out.println("\n\nInvoking Testing " + testUrl);
-		HttpResponse testRes = WS.url(testUrl).params(param).timeout("10min")
+		param.put("options", options);
+		
+		System.out.println("\n\nInvoking Testing " + execUrl);
+		HttpResponse testRes = WS.url(execUrl).headers(header) .params(param).timeout("10min")
 				.post();
 		String resStr = testRes.getString();
-		// System.out.println(resStr);
+		System.out.println("Response : \n" + resStr);
 
 		File file = new File("test_response.html");
 
@@ -256,7 +260,7 @@ public class ProcessService {
 
 		List<Double> dataList = new ArrayList<Double>();
 		String obj = "";
-		if (server.equalsIgnoreCase("OpenCPU")) {
+		if (server.equalsIgnoreCase(Const.OPENCPU)) {
 			StringTokenizer st = new StringTokenizer(output);
 			// skip the header
 			st.nextToken();
@@ -265,8 +269,13 @@ public class ProcessService {
 			}
 			Double[] ds = dataList.toArray(new Double[dataList.size()]);
 			rf.predicted = ArrayUtils.toPrimitive(ds);
-		} else {
-			// TODO:
+		} else if(server.equalsIgnoreCase(Const.OPENPY)) {
+			try {
+				rf = JsonUtil.fromJson(output, ResultFormat.class);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return rf;
 	}
@@ -292,8 +301,9 @@ public class ProcessService {
 	}
 	
 	public ResultFormat executeModel(String classifier, String ModelId,
-			String jsonData) throws Exception {
+			String jsonData, String options) throws Exception {
 
+		
 		if (classifier.equals(Const.SVR)) {
 			// return executeModelOpenPy(classifier, ModelId, jsonData);
 		}
@@ -307,6 +317,15 @@ public class ProcessService {
 			// return "Unknown algorithm: " + classifier;
 		}
 		
+		if(algo == null) {
+			// do something
+		}
+		
+		if(algo.server.equals(Const.OPENPY)) {
+			String res = executeModelOpenPy(algo.exec_url, ModelId, jsonData, options);
+			System.out.println("Response " + res);
+			return handleExecutionOutput(res, algo.server);
+		}
 		
 		 if(execUrl.endsWith("/")) { 
 			execUrl = execUrl + "R/.val/csv"; 

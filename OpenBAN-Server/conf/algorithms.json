@@ -8,5 +8,14 @@
     "server": "OpenCPU",
     "train_url": "http://openban.iiitd.edu.in/ocpu/library/openban/R/svm.train/",
     "exec_url": "http://openban.iiitd.edu.in/ocpu/library/openban/R/svm.test/"
+  },
+  "Regression": {
+    "server": "OpenCPU",
+    "train_url": "http://openban.iiitd.edu.in/ocpu/library/openban/R/regression.train/",
+    "exec_url": "http://openban.iiitd.edu.in/ocpu/library/openban/R/regression.test/"
+  },
+  "NILM": {
+    "server": "OpenPy",
+    "exec_url": "http://localhost:9001/python/package/nilm/nilmco/ascii/"
   }
 }

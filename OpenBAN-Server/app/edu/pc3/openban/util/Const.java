@@ -49,6 +49,10 @@ public class Const {
 	public static final String GREENBUTTON = "GreenButton";
 	public static final String SENSORACT = "SensorAct";
 	public static String DROPBOX = "Dropbox";
+	public static String SMAP = "sMap";
+	
+	public static String OPENCPU = "OpenCPU";
+	public static String OPENPY = "OpenPy";
 	
 	public static String STATISTICAL = "Statistical";
 	public static String TEMPORAL = "Temporal";

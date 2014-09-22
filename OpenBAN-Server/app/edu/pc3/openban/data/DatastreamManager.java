@@ -163,7 +163,26 @@ public class DatastreamManager {
 			System.out.println(device + " " + sensor + " " + channel + " " + from + " " + to);			
 			dataMap = DataSourceAdapter.fetchSensorActData( repoProfile.getRepourl(), repoProfile.getKey(), 
 					device, sensor, channel, from, to);			
+		} else if (reposource.equals(Const.SMAP)) {
+			
+			System.out.println(repoProfile.getRepourl() + " " + repoProfile.getKey() + "  " + datastream);
+			
+			// get device, sensor and channel
+			
+			// split and feed id and datastream
+			StringTokenizer st = new StringTokenizer(datastream, " ");			
+			String device = st.nextToken();			
+			String sensor= st.nextToken();
+			
+			StringTokenizer st1 = new StringTokenizer(sensor, "$");
+			sensor= st1.nextToken();
+			String channel = st1.nextToken();
+			
+			System.out.println(device + " " + sensor + " " + channel + " " + from + " " + to);			
+			dataMap = DataSourceAdapter.fetchsMapData( repoProfile.getRepourl(), repoProfile.getKey(), 
+					device, sensor, channel, from, to);			
 		}
+		
 		
 		if(dataMap == null || dataMap.size() == 0) {
 			return null;
@@ -403,6 +422,8 @@ public class DatastreamManager {
 				TimeSeries rawData = getRawData(userId, appname, service, datastream, from, to);
 				
 				if (rawData == null || rawData.entrySet().size() == 0) {
+					System.out.println("getRawData : no data found" );
+
 					return null;
 				}				
 				System.out.println("Computing feature :" + feature );
