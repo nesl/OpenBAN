@@ -294,7 +294,8 @@ public class ExecutionService {
 		ResultFormat rf;
 		
 		try {
-			
+
+			OpenBanAppJob.LOG.info(app.appname + " classifier : " + classifier);
 			OpenBanAppJob.LOG.info(app.appname + " Execute model ........");
 			String options = "{" + app.analyze.options + "}";
 			t1 = System.currentTimeMillis();
@@ -559,7 +560,8 @@ public class ExecutionService {
 
 		
 		// get the stored model id.
-		String classifier = toRFunction(app.analyze.classifier);
+		//String classifier = toRFunction(app.analyze.classifier);
+		String classifier = app.analyze.classifier;
 		
 		try {
 			String options = "{" + app.analyze.options + "}";
