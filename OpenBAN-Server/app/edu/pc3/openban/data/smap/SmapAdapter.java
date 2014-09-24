@@ -166,11 +166,14 @@ public class SmapAdapter {
 		
 		try {
 			String uuid = getUUID(device, sensor, channel);			
-			if(uuid == null) return null;
+			if(uuid == null) {
+				System.out.println("UUID not found!" + uuid );
+			}
 			
 			String smapData = downloadSmapData(hosturl, uuid, starttime, endtime);
 			return parseSmapDataFormat(smapData);			
 		} catch(Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}

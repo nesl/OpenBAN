@@ -335,23 +335,6 @@ public class DatastreamManager {
 				//System.out.println("Downloading data from Repo:" + dataKey );
 				tsData = downloadDataFromRepo(userId, appname, service, datastream, from, to);
 				
-				if(tsData != null) {
-					
-					for(DateTime keyTime : tsData.keySet()) {
-						//System.out.println("***************** downloadDataFromRepo " + keyTime.toString());
-						break;
-					}
-					
-					//TODO: Filter.. at present only for water meter data..				
-					//tsData = filterWaterMeterData(tsData);
-					
-					for(DateTime keyTime : tsData.keySet()) {
-						//System.out.println("***************** filterWaterMeterData " + keyTime.toString());
-						break;
-					}
-					
-				}
-				
 				if (tsData != null && tsData.entrySet().size() > 0) {
 					System.out.println("\tDownloaded #datapoitns " + tsData.entrySet().size());
 					
@@ -373,6 +356,11 @@ public class DatastreamManager {
 					CacheManager.set(cacheKey, tsData);
 					
 					TimeSeries tsData1 = (TimeSeries)CacheManager.get(cacheKey);
+					
+					if(tsData1 == null) {
+						CacheManager.set(cacheKey, tsData);
+						tsData1 = (TimeSeries)CacheManager.get(cacheKey);
+					}
 					
 					for(DateTime dt:tsData1.keySet()) {
 						//System.out.println("after cached..... " + dt.toString());
