@@ -499,8 +499,8 @@ public class ExecutionService {
 		
 		int dur = getDuration(app.act.time_duration, app.act.time_unit);
 		
-		System.out.println("\t " + jobKey  + "Schedule feature_window_size : " + app.analyze.feature_window_size);
-		System.out.println("\t " + jobKey  + "Schedule duration : " + dur);
+		System.out.println("\t " + jobKey  + "  Schedule feature_window_size : " + app.analyze.feature_window_size);
+		System.out.println("\t " + jobKey  + "  Schedule duration : " + dur);
 		
 		// make start and end time stamp
 		DateTime end = new DateTime();
@@ -508,8 +508,8 @@ public class ExecutionService {
 		dur = Math.max(dur,  Integer.parseInt(app.analyze.feature_window_size));
 		DateTime start = end.minusSeconds(dur).plusMillis(1);
 
-		System.out.println("\t " + jobKey  + "Schedule start : " + start.toString());
-		System.out.println("\t " + jobKey  + "Schedule   end : " + end.toString());
+		System.out.println("\t " + jobKey  + "  Schedule start : " + start.toString());
+		System.out.println("\t " + jobKey  + "  Schedule   end : " + end.toString());
 
 		
 		
