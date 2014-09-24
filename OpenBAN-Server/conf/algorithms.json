@@ -1,21 +1,31 @@
 {
   "Decision Tree": {
     "server": "OpenCPU",
+    "domain": "http://openban.iiitd.edu.in/",
     "train_url": "http://openban.iiitd.edu.in/ocpu/library/openban/R/dtree.train/",
     "exec_url": "http://openban.iiitd.edu.in/ocpu/library/openban/R/dtree.test/"
   },
   "SVM": {
     "server": "OpenCPU",
+    "domain": "http://openban.iiitd.edu.in/",
     "train_url": "http://openban.iiitd.edu.in/ocpu/library/openban/R/svm.train/",
     "exec_url": "http://openban.iiitd.edu.in/ocpu/library/openban/R/svm.test/"
   },
   "Regression": {
     "server": "OpenCPU",
+    "domain": "http://openban.iiitd.edu.in/",
     "train_url": "http://openban.iiitd.edu.in/ocpu/library/openban/R/regression.train/",
     "exec_url": "http://openban.iiitd.edu.in/ocpu/library/openban/R/regression.test/"
   },
+  "RegressionCloud": {
+    "server": "OpenCPU",
+    "domain": "https://public.opencpu.org/",
+    "train_url": "https://public.opencpu.org/ocpu/github/pandarasamy/ROpenban/R/regression.train/",
+    "exec_url": "https://public.opencpu.org/ocpu/github/pandarasamy/ROpenban/R/regression.test/"
+  },
   "NILM": {
     "server": "OpenPy",
+    "domain": "http://localhost:9001/",
     "exec_url": "http://localhost:9001/python/package/nilm/nilmco/ascii/"
   }
 }

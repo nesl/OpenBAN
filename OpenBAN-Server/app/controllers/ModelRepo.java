@@ -20,6 +20,7 @@ public class ModelRepo {
 	
 	public static class AlgorithmInfo {
 		public String server;
+		public String domain;
 		public String train_url;
 		public String exec_url;
 	}

@@ -280,9 +280,9 @@ public class ProcessService {
 		return rf;
 	}
 
-	public String getOpenCPUObjectValue(String url, String objId) throws Exception {
+	public String getOpenCPUObjectValue(String domain_url, String objId) throws Exception {
 		
-		String baseUrl = "http://openban.iiitd.edu.in/ocpu/tmp/";
+		String baseUrl = domain_url+ "/ocpu/tmp/";
 		String objectUrl = baseUrl + objId + "/R/.val/csv";
 
 		System.out.println("\n\nDownload Model params " + objectUrl);
@@ -366,7 +366,7 @@ public class ProcessService {
 
 		String obj = parseOpenCPUOutput(resStr);
 		
-		String data = getOpenCPUObjectValue(algo.exec_url, obj);
+		String data = getOpenCPUObjectValue(algo.domain, obj);
 		
 		// writeTestData(resStr);
 		System.out.println("testing..... done...");

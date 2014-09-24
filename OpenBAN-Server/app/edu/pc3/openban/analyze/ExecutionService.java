@@ -58,6 +58,7 @@ import edu.pc3.openban.data.DatastreamManager;
 import edu.pc3.openban.data.DatastreamManager.TimeSeriesContainer;
 import edu.pc3.openban.model.AppFormat;
 import edu.pc3.openban.scheduler.AppScheduler;
+import edu.pc3.openban.scheduler.OpenBanAppJob;
 import edu.pc3.openban.user.UserProfileManager;
 import edu.pc3.openban.util.Const;
 import edu.pc3.openban.util.JsonUtil;
@@ -159,7 +160,9 @@ public class ExecutionService {
 			for(AppFormat.Node datastream: datastreamList){
 				List<AppFormat.Node> featureList   = safeList(datastream.children);
 				for(AppFormat.Node feature : featureList){
-					System.out.println("fetching feature " + dataRepo.name + "  " + datastream.name + "  " + feature.name);					
+					
+					OpenBanAppJob.LOG.info(app.appname + "\t fetching feature " + dataRepo.name + "  " + datastream.name + "  " + feature.name);
+					//System.out.println("fetching feature " + dataRepo.name + "  " + datastream.name + "  " + feature.name);					
 					TimeSeries tt = DatastreamManager.getFeatureData(userId, appname, dataRepo.name, 
 							datastream.name, from_date, to_date, feature.name, feature_window_size );
 					
@@ -196,7 +199,7 @@ public class ExecutionService {
 			for(AppFormat.Node datastream: datastreamList){
 				List<AppFormat.Node> featureList   = safeList(datastream.children);
 				for(AppFormat.Node feature : featureList){
-					System.out.println("fetching feature " + dataRepo.name + "  " + datastream.name + "  " + feature.name);					
+					System.out.println("\tfetching feature " + dataRepo.name + "  " + datastream.name + "  " + feature.name);					
 					TimeSeries tt = DatastreamManager.getFeatureData(userId, appname, dataRepo.name, 
 							datastream.name, from_date, to_date, feature.name, feature_window_size );
 					
@@ -233,15 +236,23 @@ public class ExecutionService {
 			return res;
 		}
 		
-		res = acquireData();
+		OpenBanAppJob.LOG.info(app.appname + " Getting feature data....");
+		long t1 = System.currentTimeMillis();
+		res = acquireData();		
+		long t2 = System.currentTimeMillis();
+		OpenBanAppJob.LOG.info(app.appname + " Getting feature data....done");
+		OpenBanAppJob.LOG.info(app.appname + " FEATURE_COMPUTATION " + (t2-t1));
+
 		if(!res.contains(Const.SUCCESS)){
 			return res;
 		}
 
-		System.out.println("Getting model info...");
-		String modelId = DatastreamManager.getModelInfo(userId, appname, app.analyze.classifier);		
-		System.out.println("ModelId : " + modelId);
-		
+		OpenBanAppJob.LOG.info(app.appname + " Getting model info...");
+		t1 = System.currentTimeMillis();
+		String modelId = DatastreamManager.getModelInfo(userId, appname, app.analyze.classifier);
+		t2 = System.currentTimeMillis();
+		OpenBanAppJob.LOG.info(app.appname + " Getting model info... done! modelId: " + modelId);
+		OpenBanAppJob.LOG.info(app.appname + " DOWNLOAD_MODEL " + (t2-t1));
 		
 		// 
 		if(modelId == null) {
@@ -253,7 +264,7 @@ public class ExecutionService {
 			modelId = modelId.replace(app.analyze.classifier, "").replace("--", "");	
 		}
 		
-		System.out.println("ModelId : " + modelId);
+		System.out.println("\tModelId : " + modelId);
 		
 		// save the feature map
 		//DatastreamManager.storeTrainingDataIntoDropbox(userId, appname, trainingFile, trainingDataNew);
@@ -261,15 +272,17 @@ public class ExecutionService {
 		//System.out.println("Handling missing data.........");
 		//handleMissingData();
 		
-		System.out.println("Preparting exectuion set.........");
+		OpenBanAppJob.LOG.info(app.appname + "\n");
+		OpenBanAppJob.LOG.info(app.appname + " Preparting exectuion set...");
 		prepareExecutionSet();
+		OpenBanAppJob.LOG.info(app.appname + " Preparting exectuion set... done");
 		
 		// write the execution set
 		DatastreamManager.storeExecutionSetIntoDropbox(userId, appname, "execute", executionSet);		
 		String jsonData = JsonUtil.json.toJson(executionSet);
 		
-		System.out.println("execution set size : " + executionSet.keySet().size());
-		System.out.println(jsonData);
+		System.out.println("\texecution set size : " + executionSet.keySet().size());
+		//System.out.println(jsonData);
 		
 		// get the stored model id.
 		//String classifier = toRFunction(app.analyze.classifier);
@@ -282,8 +295,15 @@ public class ExecutionService {
 		
 		try {
 			
+			OpenBanAppJob.LOG.info(app.appname + " Execute model ........");
 			String options = "{" + app.analyze.options + "}";
+			t1 = System.currentTimeMillis();
 			rf = ProcessService.getInstance().executeModel(classifier, modelId, jsonData, options);
+			t2 = System.currentTimeMillis();
+			OpenBanAppJob.LOG.info(app.appname + " Execute model ........done");
+			OpenBanAppJob.LOG.info(app.appname + " MODEL_EXECUTION " + (t2-t1));
+
+
 			//result = ProcessService.getInstance().executeModelOpenPy(classifier, modelId, jsonData);
 			//rf = JsonUtil.fromJson(result, ResultFormat.class);
 			
@@ -457,7 +477,7 @@ public class ExecutionService {
 		return seconds;
 	}
 	
-	public String executeAppInstance() {
+	public String executeAppInstance(String jobKey) {
 		
 		//app = AppManager.loadApp(userId, appname);
 		
@@ -481,17 +501,31 @@ public class ExecutionService {
 		DateTime end = new DateTime();
 		DateTime start = end.minusSeconds(dur).plusMillis(1);
 		
-		System.out.println("Schedule start : " + start.toString());
-		System.out.println("Schedule   end : " + end.toString());
+		System.out.println("\t " + jobKey  + "Schedule start : " + start.toString());
+		System.out.println("\t " + jobKey  + "Schedule   end : " + end.toString());
+
 		
+		
+		OpenBanAppJob.LOG.info(jobKey + "");
+		OpenBanAppJob.LOG.info(jobKey + " Getting feature data....");
+		long t1 = System.currentTimeMillis();
 		res = acquireDataForSchedule(start.toString(), end.toString());
+		long t2 = System.currentTimeMillis();
+		OpenBanAppJob.LOG.info(jobKey + " Getting feature data....done!");
+		OpenBanAppJob.LOG.info(jobKey + " FEATURE_COMPUTATION " + (t2-t1));
+
 		if(!res.contains(Const.SUCCESS)){
 			return res;
 		}
 
-		System.out.println("Getting model info...");
-		String modelId = DatastreamManager.getModelInfo(userId, appname, app.analyze.classifier);		
-		System.out.println("ModelId : " + modelId);
+		OpenBanAppJob.LOG.info(jobKey + "");
+		OpenBanAppJob.LOG.info(jobKey + " Getting model info");
+		t1 = System.currentTimeMillis();
+		String modelId = DatastreamManager.getModelInfo(userId, appname, app.analyze.classifier);
+		t2 = System.currentTimeMillis();
+		OpenBanAppJob.LOG.info(jobKey + " ModelId :" + modelId);
+		OpenBanAppJob.LOG.info(jobKey + " DOWNLOAD_MODEL " + (t2-t1));
+
 		
 		if(modelId == null) {
 			modelId = "0" ; // for unsupervised model
@@ -501,7 +535,8 @@ public class ExecutionService {
 		if(modelId != null) {
 			modelId = modelId.replace(app.analyze.classifier, "").replace("--", "");	
 		}
-		System.out.println("ModelId : " + modelId);
+		OpenBanAppJob.LOG.info(jobKey + " ModelId :" + modelId);
+
 		
 		// save the feature map
 		//DatastreamManager.storeTrainingDataIntoDropbox(userId, appname, trainingFile, trainingDataNew);
@@ -509,8 +544,11 @@ public class ExecutionService {
 		//System.out.println("Handling missing data.........");
 		//handleMissingData();
 		
-		System.out.println("Preparting exectuion set.........");
+		OpenBanAppJob.LOG.info(jobKey + "");
+		OpenBanAppJob.LOG.info(jobKey + " Preparting exectuion set.........");
 		prepareExecutionSet();
+		OpenBanAppJob.LOG.info(jobKey + " Preparting exectuion set......... done");
+
 		
 		// write the execution set
 		DatastreamManager.storeExecutionSetIntoDropbox(userId, appname, "execute", executionSet);		
@@ -526,7 +564,16 @@ public class ExecutionService {
 		try {
 			String options = "{" + app.analyze.options + "}";
 
-			rf = ProcessService.getInstance().executeModel(classifier, modelId, jsonData, options);			
+			OpenBanAppJob.LOG.info(jobKey + "");
+			OpenBanAppJob.LOG.info(jobKey + " classifier : " + classifier);
+			OpenBanAppJob.LOG.info(jobKey + " Execute model ........");
+			t1 = System.currentTimeMillis();
+			rf = ProcessService.getInstance().executeModel(classifier, modelId, jsonData, options);
+			t2 = System.currentTimeMillis();
+			OpenBanAppJob.LOG.info(jobKey + " Execute model ........done");
+			OpenBanAppJob.LOG.info(jobKey + " MODEL_EXECUTION " + (t2-t1));
+
+
 			//ResultFormat rf = JsonUtil.fromJson(result, ResultFormat.class);
 			
 			TimeSeries dataMap = null;
@@ -535,8 +582,8 @@ public class ExecutionService {
 				dataMap = executionDataNew.get(tkey);
 			}
 			
-			System.out.println("execution size : " + dataMap.keySet().size());
-			System.out.println("Result size : " + rf.predicted.length);
+			System.out.println("\texecution size : " + dataMap.keySet().size());
+			System.out.println("\tResult size : " + rf.predicted.length);
 
 			// map to time stamp
 			TimeSeriesContainer tsContainer = new TimeSeriesContainer();

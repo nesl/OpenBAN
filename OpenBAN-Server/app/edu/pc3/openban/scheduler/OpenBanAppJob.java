@@ -82,7 +82,7 @@ public class OpenBanAppJob implements InterruptableJob {
 		}
 		
 		try {			
-			String res = new ExecutionService(userId, appname).executeAppInstance();
+			String res = new ExecutionService(userId, appname).executeAppInstance(jobKey.toString());
 			LOG.info(jobKey.toString() + " result " + res );
 		} catch (Exception e) {
 			//System.out.println("Error while running lua script for *********** " + jobKey.getName());

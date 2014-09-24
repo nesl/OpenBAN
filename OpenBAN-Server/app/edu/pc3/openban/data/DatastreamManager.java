@@ -320,25 +320,25 @@ public class DatastreamManager {
 
 		RepoProfile repoProfile = new UserProfileManager(userId).getRepoProfile(service);
 		
-		System.out.println("Looking data at Cache:" + dataKey );
+		//System.out.println("Looking data at Cache:" + dataKey );
 		Object obj = CacheManager.get(cacheKey);
 		if (obj == null) {
 			
 			// check only for xively data
 			if(repoProfile!= null && repoProfile.getReposource().equals(Const.XIVELY)) {
-				System.out.println("Looking data at Dropbox:" + dataKey );
+				//System.out.println("Looking data at Dropbox:" + dataKey );
 				tsData = retrieveData(userId, appname, dataKey, DataType.RAW);				
 			}			
 			
 			// If not found in dropbox? Go and download from data repository
 			if(tsData == null) {
-				System.out.println("Downloading data from Repo:" + dataKey );
+				//System.out.println("Downloading data from Repo:" + dataKey );
 				tsData = downloadDataFromRepo(userId, appname, service, datastream, from, to);
 				
 				if(tsData != null) {
 					
 					for(DateTime keyTime : tsData.keySet()) {
-						System.out.println("***************** downloadDataFromRepo " + keyTime.toString());
+						//System.out.println("***************** downloadDataFromRepo " + keyTime.toString());
 						break;
 					}
 					
@@ -346,28 +346,28 @@ public class DatastreamManager {
 					//tsData = filterWaterMeterData(tsData);
 					
 					for(DateTime keyTime : tsData.keySet()) {
-						System.out.println("***************** filterWaterMeterData " + keyTime.toString());
+						//System.out.println("***************** filterWaterMeterData " + keyTime.toString());
 						break;
 					}
 					
 				}
 				
 				if (tsData != null && tsData.entrySet().size() > 0) {
-					System.out.println("Downloaded #datapoitns " + tsData.entrySet().size());
+					System.out.println("\tDownloaded #datapoitns " + tsData.entrySet().size());
 					
 					// store only the xively data
 					if(repoProfile!= null && repoProfile.getReposource().equals(Const.XIVELY)) {
-						System.out.println("Storing data to Dropbox:" + dataKey );
+						//System.out.println("Storing data to Dropbox:" + dataKey );
 						storeRawData(userId, appname, dataKey, tsData, DataType.RAW);						
 					}
 				}
 			} 
 			
 			if (tsData != null && tsData.size() > 0) {
-					System.out.println("Storing data to Cache:" + dataKey );
+					//System.out.println("Storing data to Cache:" + dataKey );
 					
 					for(DateTime dt:tsData.keySet()) {
-						System.out.println("before cached..... " + dt.toString());
+						//System.out.println("before cached..... " + dt.toString());
 						break;
 					}					
 					CacheManager.set(cacheKey, tsData);
@@ -375,7 +375,7 @@ public class DatastreamManager {
 					TimeSeries tsData1 = (TimeSeries)CacheManager.get(cacheKey);
 					
 					for(DateTime dt:tsData1.keySet()) {
-						System.out.println("after cached..... " + dt.toString());
+						//System.out.println("after cached..... " + dt.toString());
 						break;
 					}
 
@@ -384,10 +384,10 @@ public class DatastreamManager {
 		} else {			
 			tsData = (TimeSeries)obj;
 			for(DateTime dt:tsData.keySet()) {
-				System.out.println("cached..... " + dt.toString());
+				//System.out.println("cached..... " + dt.toString());
 				break;
 			}
-			System.out.println("Found #datapoints at Cache:" + dataKey + "  " + tsData.entrySet().size());
+			//System.out.println("Found #datapoints at Cache:" + dataKey + "  " + tsData.entrySet().size());
 		}
 		
 		return tsData;
@@ -406,50 +406,49 @@ public class DatastreamManager {
 
 		RepoProfile repoProfile = new UserProfileManager(userId).getRepoProfile(service);
 
-		System.out.println("Looking data at Cache:" + dataKey );
+		//System.out.println("Looking data at Cache:" + dataKey );
 		Object obj = CacheManager.get(cacheKey);
 		if (obj == null) {
 			
 			// check only for xively data
 			if(repoProfile!= null && repoProfile.getReposource().equals(Const.XIVELY)) {
-				System.out.println("Looking data at Dropbox:" + dataKey );
+				//System.out.println("Looking data at Dropbox:" + dataKey );
 				tsData = retrieveData(userId, appname, dataKey, DataType.FEATURE);
 			}			
 			
 			// If not found in dropbox? Go and download from data repository
 			if(tsData == null) {
-				System.out.println("Downloading data from Repo:" + dataKey );
+				//System.out.println("Downloading data from Repo:" + dataKey );
 				TimeSeries rawData = getRawData(userId, appname, service, datastream, from, to);
 				
 				if (rawData == null || rawData.entrySet().size() == 0) {
 					System.out.println("getRawData : no data found" );
-
 					return null;
 				}				
-				System.out.println("Computing feature :" + feature );
+				//System.out.println("Computing feature :" + feature );
 				tsData = FeatureManager.computeFeature(rawData, feature, window_size );
 				//tsData = FeatureManager.computeFeature1(rawData, feature, window_size, from, to );
 				
 				if (tsData != null && tsData.entrySet().size() > 0) {
-					System.out.println("Downloaded #datapoitns " + tsData.entrySet().size());
+					System.out.println("\tDownloaded #datapoitns " + tsData.entrySet().size());
 					
 					// store only the xively data
 					if(repoProfile!= null && repoProfile.getReposource().equals(Const.XIVELY)) {
-						System.out.println("Storing data to Dropbox:" + dataKey );
+						//System.out.println("Storing data to Dropbox:" + dataKey );
 						storeRawData(userId, appname, dataKey, tsData, DataType.FEATURE);						
 					}
 				}
 			} 
 			
 			if (tsData != null && tsData.entrySet().size() > 0) {
-					System.out.println("Storing data to Cache:" + dataKey );
+					//System.out.println("Storing data to Cache:" + dataKey );
 					CacheManager.set(cacheKey, tsData);
 			}			
 			
 		} else {			
 			tsData = (TimeSeries)obj;
 
-			System.out.println("Foun #datapoints at Cache:" + dataKey + "  " + tsData.entrySet().size());
+			//System.out.println("Foun #datapoints at Cache:" + dataKey + "  " + tsData.entrySet().size());
 		}
 		
 		return tsData;
