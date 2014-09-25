@@ -510,7 +510,13 @@ public class Application extends Controller {
 		
 		String userId = session.get(SESSION_KEY);		
 		// validate the appname and userid
-		String res = new ExecutionService(userId, appname).scheduleApp();
+		int n=20;		
+		String res = null;
+		for(int i=1; i<=n; i++) {
+			String an = appname + "_" + i;
+			System.out.println("Scheduling " + an);
+			res = new ExecutionService(userId, an).scheduleApp();
+		}		
 		renderText(res);
 	}
 

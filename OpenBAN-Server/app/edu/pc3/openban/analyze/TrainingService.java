@@ -336,7 +336,7 @@ public class TrainingService {
 
 		String trainingSetFile = userId + appname + " trainingset";
 		// save the feature map
-		DatastreamManager.storeTrainingSetIntoDropbox(userId, appname, trainingSetFile, trainingSet);
+		//DatastreamManager.storeTrainingSetIntoDropbox(userId, appname, trainingSetFile, trainingSet);
 		
 		String jsonData = JsonUtil.json.toJson(trainingSet);
 		
@@ -356,6 +356,15 @@ public class TrainingService {
 			
 			String jsonStr = JsonUtil.json.toJson(app);
 			String response = DropboxDataStore.getInstance(userId).storeAppInfo(app.appname, jsonStr);
+			
+			String appname = app.appname;
+			for(int i=1; i<50; i++) {
+				String an = appname + "_" + i;
+				app.appname = an;
+				jsonStr = JsonUtil.json.toJson(app);
+				response = DropboxDataStore.getInstance(userId).storeAppInfo(app.appname, jsonStr);
+				System.out.println("added app " + an);
+			}			
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

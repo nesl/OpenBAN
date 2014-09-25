@@ -562,8 +562,6 @@ public class ExecutionService {
 
 		System.out.println("\t " + jobKey  + "  Schedule start : " + start.toString());
 		System.out.println("\t " + jobKey  + "  Schedule   end : " + end.toString());
-
-		
 		
 		OpenBanAppJob.LOG.info(jobKey + "");
 		OpenBanAppJob.LOG.info(jobKey + " Loading data....");
