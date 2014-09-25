@@ -60,13 +60,15 @@ public class AppManager {
 
 	public static AppFormat loadApp(String userId, String appname) {
 		
+		/*
 		String cacheKey = userId + "--" + appname;		
 		String appJson = (String)CacheManager.get(cacheKey);
 		if(appJson == null) {
 			appJson = DropboxDataStore.getInstance(userId).loadAppInfo(appname);
 			CacheManager.set(cacheKey, appJson);
-		}
+		}*/
 		 
+		String appJson = DropboxDataStore.getInstance(userId).loadAppInfo(appname);
 		AppFormat app = null;		
 		try {
 			app = JsonUtil.fromJson(appJson, AppFormat.class);
@@ -113,12 +115,16 @@ public class AppManager {
 
 	public static String saveApp(String userId, String json) {
 		
+
 		AppFormat appFormat = toObj(json);		
 		//TODO: to necessary validation
-		
+
 		String jsonStr = JsonUtil.json.toJson(appFormat);		
 		String response = DropboxDataStore.getInstance(userId).storeAppInfo(appFormat.appname, jsonStr);
-		
+
+		//String cacheKey = userId + "--" + appFormat.appname;
+		//CacheManager.set(cacheKey, jsonStr);
+
 		if(response.equals(Const.SUCCESS)) {
 			setRecentApp(userId,appFormat.appname);
 		}

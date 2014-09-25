@@ -40,6 +40,9 @@
  */
 package edu.pc3.openban.analyze;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -346,7 +349,6 @@ public class ExecutionService {
 			OpenBanAppJob.LOG.info(app.appname + " Execute model ........done");
 			OpenBanAppJob.LOG.info(app.appname + " MODEL_EXECUTION " + (t2-t1));
 
-
 			//result = ProcessService.getInstance().executeModelOpenPy(classifier, modelId, jsonData);
 			//rf = JsonUtil.fromJson(result, ResultFormat.class);
 			
@@ -619,8 +621,22 @@ public class ExecutionService {
 
 		
 		// write the execution set
-		//DatastreamManager.storeExecutionSetIntoDropbox(userId, appname, "execute", executionSet);		
+		//DatastreamManager.storeExecutionSetIntoDropbox(userId, appname, "execute", executionSet);
+		
 		String jsonData = JsonUtil.json.toJson(executionSet);
+
+		try {
+			File file = new File(userId+appname+".json");
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(jsonData);
+			bw.close();
+		} catch(Exception e) {
+			
+		}
 		
 		
 		ResultFormat rf;
@@ -646,7 +662,7 @@ public class ExecutionService {
 			tEnd = System.currentTimeMillis();
 			
 			OpenBanAppJob.LOG.info(jobKey + " TIMEALL: load feature execute all \t" 
-					+ tLoad + " " + tFeature + " " + tExecute + " " + (tBegin-tEnd));
+					+ tLoad + " " + tFeature + " " + tExecute + " " + (tEnd-tBegin));
 			
 			//ResultFormat rf = JsonUtil.fromJson(result, ResultFormat.class);
 			
