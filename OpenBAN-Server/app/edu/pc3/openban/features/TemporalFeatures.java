@@ -55,6 +55,7 @@ public class TemporalFeatures {
 	private TimeSeries tsHourOfTheDay = new TimeSeries();
 	private TimeSeries tsDayOfTheWeek = new TimeSeries();
 	private TimeSeries tsDayOfTheMonth = new TimeSeries();
+	private TimeSeries tsEpochMillis = new TimeSeries();
 
 	private List<TimeWindow> timeWindowList;
 
@@ -84,13 +85,18 @@ public class TemporalFeatures {
 	public TimeSeries getDayOfTheMonthSeries() {
 		return tsDayOfTheMonth;
 	}
-
+	
+	public TimeSeries getEpochMillisSeries() {
+		return tsEpochMillis;
+	}
+	
 	private void updateSeries(DateTime time) {
 		tsMinuteOfTheDay.put(time, new Double(time.minuteOfDay().get()));
 		tsMinuteOfTheHour.put(time, new Double(time.minuteOfHour().get()));
 		tsHourOfTheDay.put(time, new Double(time.hourOfDay().get()));
 		tsDayOfTheWeek.put(time, new Double(time.dayOfWeek().get()));		
 		tsDayOfTheMonth.put(time, new Double(time.dayOfMonth().get()));
+		tsEpochMillis.put(time, new Double(time.getMillis()));
 	}
 
 	public void compute() {

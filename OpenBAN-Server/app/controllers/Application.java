@@ -553,6 +553,7 @@ public class Application extends Controller {
 		temporal.add(Const.HOUR_OF_THE_DAY);
 		temporal.add(Const.DAY_OF_THE_WEEK);
 		temporal.add(Const.DAY_OF_THE_MONTH);
+		temporal.add(Const.EPOCH_IN_MILLIS);
 		
 		feature.put(Const.STATISTICAL, stat);
 		feature.put(Const.TEMPORAL, temporal);

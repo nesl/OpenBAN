@@ -67,6 +67,7 @@ public class AppFormat {
 		public String feature_window_size;
 		public List<DatastreamTree> features;		
 		public String classifier;
+		public String modelid;
 		public String options;
 	}
 

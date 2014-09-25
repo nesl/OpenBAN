@@ -65,7 +65,9 @@ public class OpenBanAppJob implements InterruptableJob {
 		JobKey jobKey = context.getJobDetail().getKey();
 		JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 		
-		LOG.info(jobKey.toString() + " started " );
+		
+		long t1 = System.currentTimeMillis();
+		LOG.info(jobKey.toString() + " TIME: started " + t1 );
 		
 		
 		// Get the params for event based tasklet
@@ -89,7 +91,9 @@ public class OpenBanAppJob implements InterruptableJob {
 			//LOG.info(jobKey.toString() + " execute " + e.fillInStackTrace() );
 			e.printStackTrace();
 		}		
-		LOG.info(jobKey.toString() + " ended...." );
+		long t2 = System.currentTimeMillis();
+		LOG.info(jobKey.toString() + " TIME: ended...." + t2 + "\t" + (t2-t1) );
+
 	}
 
 	@Override

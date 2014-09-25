@@ -40,6 +40,7 @@
  */
 package controllers;
 
+import edu.pc3.openban.cache.CacheManager;
 import edu.pc3.openban.datastore.DropboxDataStore;
 import edu.pc3.openban.model.AppFormat;
 import edu.pc3.openban.util.Const;
@@ -59,7 +60,13 @@ public class AppManager {
 
 	public static AppFormat loadApp(String userId, String appname) {
 		
-		String appJson = DropboxDataStore.getInstance(userId).loadAppInfo(appname);
+		String cacheKey = userId + "--" + appname;		
+		String appJson = (String)CacheManager.get(cacheKey);
+		if(appJson == null) {
+			appJson = DropboxDataStore.getInstance(userId).loadAppInfo(appname);
+			CacheManager.set(cacheKey, appJson);
+		}
+		 
 		AppFormat app = null;		
 		try {
 			app = JsonUtil.fromJson(appJson, AppFormat.class);

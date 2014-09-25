@@ -77,6 +77,7 @@ public class Const {
 	public static String HOUR_OF_THE_DAY = "HourOfTheDay";
 	public static String DAY_OF_THE_WEEK = "DayOfTheWeek";
 	public static String DAY_OF_THE_MONTH = "DayOfTheMonth";
+	public static String EPOCH_IN_MILLIS = "EpochInMillis";
 	
 	public static String DECISION_TREE = "Decision Tree";
 	public static String REGRESSION = "Regression";

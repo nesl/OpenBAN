@@ -23,6 +23,12 @@
     "train_url": "https://public.opencpu.org/ocpu/github/pandarasamy/ROpenban/R/regression.train/",
     "exec_url": "https://public.opencpu.org/ocpu/github/pandarasamy/ROpenban/R/regression.test/"
   },
+  "AnomalyCloud": {
+    "server": "OpenCPU",
+    "domain": "https://public.opencpu.org/",
+    "train_url": "https://public.opencpu.org/ocpu/github/pandarasamy/ROpenban/R/anomaly.train/",
+    "exec_url": "https://public.opencpu.org/ocpu/github/pandarasamy/ROpenban/R/anomaly.test/"
+  },
   "NILM": {
     "server": "OpenPy",
     "domain": "http://localhost:9001/",

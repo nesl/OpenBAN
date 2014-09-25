@@ -40,7 +40,10 @@
  */
 package edu.pc3.openban.features;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.List;
@@ -55,6 +58,7 @@ import org.python.core.PySystemState;
 import org.python.util.PythonInterpreter;
 
 import edu.pc3.openban.util.Const;
+import edu.pc3.openban.util.JsonUtil;
 import edu.pc3.openban.util.TimeSeries;
 import edu.pc3.openban.util.TimeWindow;
 
@@ -120,11 +124,25 @@ public class FeatureManager {
 			int window_size) {
 
 		List<TimeWindow> tw = TimeWindow.split(tsData, window_size);
-
 		if (tw == null || tw.isEmpty()) {
 			return null;
 		}
 
+		try {
+			File file = new File("timewindow.json");
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(JsonUtil.json1.toJson(tw));
+			bw.close();
+		}catch(Exception e) {
+			
+		}
+		
+		
+		
 		TimeWindow tt;
 
 		System.out.println("feature " + feature);
@@ -193,6 +211,9 @@ public class FeatureManager {
 		}
 		if (feature.equals(Const.DAY_OF_THE_MONTH)) {
 			featureData = tf.getDayOfTheMonthSeries();
+		}
+		if (feature.equals(Const.EPOCH_IN_MILLIS)) {
+			featureData = tf.getEpochMillisSeries();
 		}
 
 		if (featureData == null) {

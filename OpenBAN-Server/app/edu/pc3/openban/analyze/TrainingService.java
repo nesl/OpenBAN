@@ -53,6 +53,7 @@ import org.joda.time.DateTime;
 import controllers.AppManager;
 import controllers.Application;
 import edu.pc3.openban.data.DatastreamManager;
+import edu.pc3.openban.datastore.DropboxDataStore;
 import edu.pc3.openban.model.AppFormat;
 import edu.pc3.openban.util.Const;
 import edu.pc3.openban.util.JsonUtil;
@@ -349,6 +350,13 @@ public class TrainingService {
 			String ModelInfo = ""; //ProcessService.getInstance().getModelPararm(ModelId);
 			String ModelFile = app.analyze.classifier + "--" + ModelId;			
 			DatastreamManager.storeModelInfo(userId, appname, ModelFile, ModelInfo);
+			
+			System.out.println("Updating modelid to the app..!" + ModelFile);
+			app.analyze.modelid = ModelFile;
+			
+			String jsonStr = JsonUtil.json.toJson(app);
+			String response = DropboxDataStore.getInstance(userId).storeAppInfo(app.appname, jsonStr);
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
